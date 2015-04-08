@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 
@@ -13,6 +14,8 @@ import javafx.scene.layout.BorderPane;
 public class Main extends Application {
 	
 	private BorderPane rootLayout;
+	private AnchorPane singleLayout;
+	
 	private Stage primaryStage;
 	
 	@Override
@@ -22,7 +25,8 @@ public class Main extends Application {
 
         initRootLayout();
 
-        showSimulatorContainer();
+        //showSimulatorContainer();
+        
 	}
 	
 	public void clickFileOpen(){
@@ -33,11 +37,11 @@ public class Main extends Application {
 		try {
 			// Load root layout from fxml file.
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(Main.class.getResource("view/RootWindow.fxml"));
-            rootLayout = (BorderPane) loader.load();
+            loader.setLocation(Main.class.getResource("view/SingleLayout.fxml"));
+            singleLayout = (AnchorPane) loader.load();
 
             // Show the scene containing the root layout.
-            Scene scene = new Scene(rootLayout);
+            Scene scene = new Scene(singleLayout);
             primaryStage.setScene(scene);
             primaryStage.show();
 			
@@ -50,10 +54,10 @@ public class Main extends Application {
 		try {
 			FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Main.class.getResource("view/SimulatorContainer.fxml"));
-            AnchorPane personOverview = (AnchorPane) loader.load();
+            AnchorPane container = (AnchorPane) loader.load();
 
             // Set person overview into the center of root layout.
-            rootLayout.setCenter(personOverview);
+            rootLayout.setCenter(container);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
