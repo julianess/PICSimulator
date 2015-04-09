@@ -21,7 +21,6 @@ public class Main extends Application {
         this.primaryStage.setTitle("PIC Simulator");
 
         initRootLayout();
-     
 	}
 	
 	public void initRootLayout(){
