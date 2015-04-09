@@ -1,5 +1,16 @@
 package simulator.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+
+import javax.swing.JFileChooser;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
@@ -17,7 +28,55 @@ public class SingleLayoutController {
 	
 	@FXML
 	public void onClickOpenFile(){
-		editor.setText("funktioniert!");
+		//String file = "C:\\Users\\Dennis\\Desktop\\Test.txt";
+		Charset charset = Charset.forName("UTF-8");
+		String Inhalt = "";
+		String File;
+		
+		JFileChooser chooser = new JFileChooser();
+		int rueckgabeWert = chooser.showOpenDialog(null);
+        
+        /* Abfrage, ob auf "Öffnen" geklickt wurde */
+        if(rueckgabeWert == JFileChooser.APPROVE_OPTION)
+        {
+             // Ausgabe der ausgewaehlten Datei
+            // File = chooser.getSelectedFile().getName();
+             File = chooser.getSelectedFile().getPath();
+             System.out.println(File);
+           /*  try
+     		{
+                 List<String> lines = Files.readAllLines(Paths.get(File), Charset.defaultCharset());
+                 for (String line : lines)
+                 {
+                     Inhalt += line + "\n"; //Fügt nach jeder eingelesenen Zeile einen Zeilenumbruch ein
+                 }
+                 Inhalt = Inhalt.substring(0, Inhalt.length()-1); //Entfernt den Zeilenumbruch nach der letzten Zeile
+             } 
+     		catch (IOException e)
+     		{
+                 e.printStackTrace();
+             }
+     		
+     		editor.setText(Inhalt);*/
+        }
+		
+		
+           
+	/*	try
+		{
+            List<String> lines = Files.readAllLines(Paths.get(file), Charset.defaultCharset());
+            for (String line : lines)
+            {
+                Inhalt += line + "\n"; //Fügt nach jeder eingelesenen Zeile einen Zeilenumbruch ein
+            }
+            Inhalt = Inhalt.substring(0, Inhalt.length()-1); //Entfernt den Zeilenumbruch nach der letzten Zeile
+        } 
+		catch (IOException e)
+		{
+            e.printStackTrace();
+        }
+		
+		editor.setText(Inhalt);*/
 		
 	}
 
