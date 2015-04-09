@@ -29,7 +29,6 @@ public class SingleLayoutController {
 	@FXML
 	public void onClickOpenFile(){
 		//String file = "C:\\Users\\Dennis\\Desktop\\Test.txt";
-		Charset charset = Charset.forName("UTF-8");
 		String Inhalt = "";
 		String File;
 		
@@ -40,44 +39,22 @@ public class SingleLayoutController {
         if(rueckgabeWert == JFileChooser.APPROVE_OPTION)
         {
              // Ausgabe der ausgewaehlten Datei
-            // File = chooser.getSelectedFile().getName();
              File = chooser.getSelectedFile().getPath();
-             System.out.println(File);
-           /*  try
-     		{
+           try
+           {
                  List<String> lines = Files.readAllLines(Paths.get(File), Charset.defaultCharset());
                  for (String line : lines)
                  {
                      Inhalt += line + "\n"; //Fügt nach jeder eingelesenen Zeile einen Zeilenumbruch ein
                  }
                  Inhalt = Inhalt.substring(0, Inhalt.length()-1); //Entfernt den Zeilenumbruch nach der letzten Zeile
-             } 
+            } 
      		catch (IOException e)
      		{
                  e.printStackTrace();
              }
      		
-     		editor.setText(Inhalt);*/
+     		editor.setText(Inhalt);
         }
-		
-		
-           
-	/*	try
-		{
-            List<String> lines = Files.readAllLines(Paths.get(file), Charset.defaultCharset());
-            for (String line : lines)
-            {
-                Inhalt += line + "\n"; //Fügt nach jeder eingelesenen Zeile einen Zeilenumbruch ein
-            }
-            Inhalt = Inhalt.substring(0, Inhalt.length()-1); //Entfernt den Zeilenumbruch nach der letzten Zeile
-        } 
-		catch (IOException e)
-		{
-            e.printStackTrace();
-        }
-		
-		editor.setText(Inhalt);*/
-		
 	}
-
 }
