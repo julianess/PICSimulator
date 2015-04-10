@@ -1,7 +1,9 @@
 package simulator.controller;
 
 
+import java.awt.Desktop;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -27,6 +29,7 @@ public class SingleLayoutController {
 	@FXML
 	private TextArea editor;
 
+	//File oeffnen
 	@FXML
 	public void onClickOpenFile() {
 
@@ -68,7 +71,7 @@ public class SingleLayoutController {
 				}
 	}
 	
-	
+	//File speichern
 	@FXML
 	public void onClickSaveFile() {
 
@@ -97,4 +100,19 @@ public class SingleLayoutController {
 	      System.err.println(x);
 	    }
 	  }
+	
+	//Dokumentation oeffnen
+	//Doku.pdf muss im bin Ordner des Programms liegen
+	@FXML
+	public void onClickDoku() {
+		//Dateipfad des Programms erhalten, %20 durch Leerzeichen ersetzen und \Doku.pdf anfuegen
+		File file = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath().replaceAll("%20", " ") + "\\Doku.pdf");
+		 
+        try {
+            Desktop desktop = Desktop.getDesktop();
+            desktop.open(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+	}
 }
