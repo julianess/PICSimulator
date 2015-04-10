@@ -1,6 +1,8 @@
 package simulator.controller;
 
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -20,7 +22,7 @@ public class SingleLayoutController {
 	private MenuItem openFile;
 
 	@FXML
-	private MenuItem closeFile;
+	private MenuItem saveFile;
 
 	@FXML
 	private TextArea editor;
@@ -56,5 +58,43 @@ public class SingleLayoutController {
 			e.printStackTrace();
 		}
 		editor.setText(Inhalt);
+		
+		//Textarea in Zeilen splitten und zeilenweise in das alleZeilen Array schreiben
+				String[] alleZeilen = editor.getText().split("\n");
+				//Testweise Ausgabe des Array
+				for (int i = 0; i < alleZeilen.length;i++)
+				{
+					System.out.println(alleZeilen[i]);
+				}
 	}
+	
+	
+	@FXML
+	public void onClickSaveFile() {
+
+		FileChooser fileChooser = new FileChooser();
+		Stage primaryStage = (Stage) editor.getScene().getWindow();
+		
+	    //String zeilenweise aufteilen
+		String[] alleZeilen = editor.getText().split("\n");
+		
+		//Dateipfad setzen
+	    Path file = Paths.get(fileChooser.showSaveDialog(primaryStage).getPath());
+
+	    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file.toString())))
+	    {
+	    	//Zeilenweise in die Datei schreiben und nach jeder Zeile einen Zeilenumbruch einfuegen
+	    	for(int i = 0; i < alleZeilen.length; i++)
+	    	{
+	    		writer.write(alleZeilen[i]);
+	    		if(i < alleZeilen.length - 1)
+	    		{
+	    			writer.newLine();
+	    		}
+	    	}
+	    	writer.close();
+	    } catch (IOException x) {
+	      System.err.println(x);
+	    }
+	  }
 }
