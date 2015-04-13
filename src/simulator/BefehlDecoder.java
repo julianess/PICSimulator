@@ -66,7 +66,7 @@ public class BefehlDecoder
 		}
 		else if(befehlcode >= 512)
 		{
-			befehl = (short) (befehlcode & 16256);
+			befehl = (short) (befehlcode & 16128);
 			if(befehl == 3840)
 				incfsz(befehlcode);
 			else if(befehl == 3584)
@@ -202,7 +202,6 @@ public class BefehlDecoder
 	}
 
 	private void incf(short befehlcode2) {
-		// TODO Auto-generated method stub
 		
 	}
 

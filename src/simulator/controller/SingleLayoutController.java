@@ -2,9 +2,7 @@ package simulator.controller;
 
 
 import java.awt.Desktop;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -12,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import simulator.BefehlDecoder;
 import simulator.ValueClass;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,7 +25,7 @@ import javafx.stage.Stage;
 public class SingleLayoutController {
 
 	private ObservableList<ValueClass> data = FXCollections.observableArrayList();
-	private int programcounter;
+	private int programcounter = 0;
 	
 	@FXML
 	private MenuItem openFile;
@@ -34,21 +33,16 @@ public class SingleLayoutController {
 	//Tabelle fuer Code
 	@FXML
 	private TableView<ValueClass> table;
-/*	@FXML
-	private TableColumn<ValueClass,String> table_pcl;
-	@FXML
-	private TableColumn<ValueClass,String> table_code;
-	@FXML
-	private TableColumn<ValueClass,String> table_zusatz;
-*/
+	
+	//Spalten erzeugen
+	TableColumn<ValueClass, String> table_pcl = new TableColumn<ValueClass, String>("PCL");
+	TableColumn<ValueClass, String> table_code = new TableColumn<ValueClass, String>("Code");
+	TableColumn<ValueClass, String> table_zusatz = new TableColumn<ValueClass, String>("Zusatz");
+	
 	//File oeffnen
 	@FXML
 	public void onClickOpenFile() {
-
-		//Variablen
 		
-		//Inhaltsstring fuer das Textfenster
-		String Inhalt = "";
 		
 		//Charset fuer Umlaute
 		Charset charset = Charset.forName("ISO-8859-1");
@@ -59,10 +53,6 @@ public class SingleLayoutController {
 
 		fileChooser.setTitle("Choose a File");
 		Path file = Paths.get(fileChooser.showOpenDialog(primaryStage).getPath());
-		
-		TableColumn<ValueClass, String> table_pcl = new TableColumn<ValueClass, String>("PCL");
-		TableColumn<ValueClass, String> table_code = new TableColumn<ValueClass, String>("Code");
-		TableColumn<ValueClass, String> table_zusatz = new TableColumn<ValueClass, String>("Zusatz");
 		
 		table_pcl.setCellValueFactory(new PropertyValueFactory<ValueClass, String>("text_pcl"));
 		table_pcl.setEditable(false);
@@ -81,10 +71,8 @@ public class SingleLayoutController {
 		try {
 			List<String> lines = Files.readAllLines(file, charset);
 			for (String line : lines)
-			{
-				
+			{	
 				data.add(new ValueClass(line.substring(0, 4).trim(), line.substring(5, 9).trim(), line.substring(10, line.length()).trim()));
-				System.out.println(data.toString());
 			}
 			// Entfernt den Zeilenumbruch nach der letzten Zeile
 			//Inhalt = Inhalt.substring(0, Inhalt.length() - 1); 
@@ -110,5 +98,26 @@ public class SingleLayoutController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+	}
+	
+	public short run()
+	{
+		String pclString;
+		if(programcounter < 16)
+			pclString = "000" + Integer.toHexString(programcounter).toUpperCase();
+		else if(programcounter < 256)
+			pclString = "00" + Integer.toHexString(programcounter).toUpperCase();
+		else if(programcounter < 4096)
+			pclString = "0" + Integer.toHexString(programcounter).toUpperCase();
+		else
+			pclString = Integer.toHexString(programcounter).toUpperCase();
+		for(int i = 1; i <= table.getItems().size() ;i++)
+		{
+			if(table_pcl.getCellData(i).equals(pclString))
+			{
+				return (short) Integer.parseInt(table_code.getCellData(i), 16);
+			}
+		}
+		return 0;
 	}
 }
