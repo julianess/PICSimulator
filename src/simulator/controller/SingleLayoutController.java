@@ -106,7 +106,7 @@ public class SingleLayoutController {
 	@FXML
 	public void onClickDoku() {
 		//Dateipfad des Programms erhalten, %20 durch Leerzeichen ersetzen und \Doku.pdf anfuegen
-		File file = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath().replaceAll("%20", " ") + "\\Doku.pdf");
+		File file = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath().replaceAll("%20", " ") + "/Doku.pdf");
 		 
         try {
             Desktop desktop = Desktop.getDesktop();
