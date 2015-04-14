@@ -6,12 +6,14 @@ public class ValueClass {
 	private String text_code;
 	private String text_zusatz;
 	
+	
 	public ValueClass(String text_pcl, String text_code, String text_zusatz)
 	{
 		this.text_pcl = text_pcl;
 		this.text_code = text_code;
 		this.text_zusatz = text_zusatz;
 	}
+	
 
 	public String getText_pcl() {
 		return text_pcl;
