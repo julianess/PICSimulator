@@ -2,10 +2,6 @@ package simulator;
 	
 import java.io.IOException;
 
-import simulator.controller.SingleLayoutController;
-
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Single;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;

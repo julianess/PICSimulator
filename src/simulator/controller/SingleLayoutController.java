@@ -171,50 +171,50 @@ public class SingleLayoutController {
 		table_00.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_00"));
 		table_00.setEditable(true);
 		table_00.setSortable(false);
-		table_00.setMinWidth(20);
-		table_00.setMaxWidth(20);
+		table_00.setMinWidth(25);
+		table_00.setMaxWidth(25);
 		
 		table_01.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_01"));
 		table_01.setEditable(true);
 		table_01.setSortable(false);
-		table_01.setMinWidth(20);
-		table_01.setMaxWidth(20);
+		table_01.setMinWidth(25);
+		table_01.setMaxWidth(25);
 		
 		table_02.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_02"));
 		table_02.setEditable(true);
 		table_02.setSortable(false);
-		table_02.setMinWidth(20);
-		table_02.setMaxWidth(20);
+		table_02.setMinWidth(25);
+		table_02.setMaxWidth(25);
 		
 		table_03.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_03"));
 		table_03.setEditable(true);
 		table_03.setSortable(false);
-		table_03.setMinWidth(20);
-		table_03.setMaxWidth(20);
+		table_03.setMinWidth(25);
+		table_03.setMaxWidth(25);
 		
 		table_04.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_04"));
 		table_04.setEditable(true);
 		table_04.setSortable(false);
-		table_04.setMinWidth(20);
-		table_04.setMaxWidth(20);
+		table_04.setMinWidth(25);
+		table_04.setMaxWidth(25);
 		
 		table_05.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_05"));
 		table_05.setEditable(true);
 		table_05.setSortable(false);
-		table_05.setMinWidth(20);
-		table_05.setMaxWidth(20);
+		table_05.setMinWidth(25);
+		table_05.setMaxWidth(25);
 		
 		table_06.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_06"));
 		table_06.setEditable(true);
 		table_06.setSortable(false);
-		table_06.setMinWidth(20);
-		table_06.setMaxWidth(20);
+		table_06.setMinWidth(25);
+		table_06.setMaxWidth(25);
 		
 		table_07.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_07"));
 		table_07.setEditable(true);
 		table_07.setSortable(false);
-		table_07.setMinWidth(20);
-		table_07.setMaxWidth(20);
+		table_07.setMinWidth(25);
+		table_07.setMaxWidth(25);
 		
 		for(int i = 0; i <= 31; i++)
 		{
@@ -235,4 +235,6 @@ public class SingleLayoutController {
 	speicher.getColumns().add(table_06);
 	speicher.getColumns().add(table_07);
 	}
+	
+	
 }
