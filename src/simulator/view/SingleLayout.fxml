@@ -38,7 +38,7 @@
          <left>
             <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <children>
-                  <TabPane layoutY="111.0" minWidth="250.0" prefHeight="200.0" prefWidth="250.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <TabPane layoutY="111.0" minWidth="250.0" prefHeight="200.0" prefWidth="250.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <tabs>
                       <Tab text="Register">
                         <content>
@@ -94,6 +94,8 @@
                       </Tab>
                     </tabs>
                   </TabPane>
+                  <Button fx:id="button_start" layoutX="14.0" layoutY="371.0" maxHeight="26.0" maxWidth="60.0" minHeight="26.0" minWidth="60.0" mnemonicParsing="false" onAction="#doVisibleRun" prefHeight="26.0" prefWidth="60.0" text="Start" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" />
+                  <Button fx:id="button_stop" layoutX="81.0" layoutY="371.0" maxHeight="26.0" maxWidth="60.0" minHeight="26.0" minWidth="60.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="60.0" text="Stop" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="100.0" />
                </children>
             </AnchorPane>
          </left>
