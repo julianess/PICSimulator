@@ -94,7 +94,7 @@
                       </Tab>
                     </tabs>
                   </TabPane>
-                  <Button fx:id="button_start" layoutX="14.0" layoutY="371.0" maxHeight="26.0" maxWidth="60.0" minHeight="26.0" minWidth="60.0" mnemonicParsing="false" onAction="#doVisibleRun" prefHeight="26.0" prefWidth="60.0" text="Start" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" />
+                  <Button fx:id="button_start" layoutX="14.0" layoutY="371.0" maxHeight="26.0" maxWidth="60.0" minHeight="26.0" minWidth="60.0" mnemonicParsing="false" onAction="#start2" prefHeight="26.0" prefWidth="60.0" text="Start" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" />
                   <Button fx:id="button_stop" layoutX="81.0" layoutY="371.0" maxHeight="26.0" maxWidth="60.0" minHeight="26.0" minWidth="60.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="60.0" text="Stop" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="100.0" />
                </children>
             </AnchorPane>

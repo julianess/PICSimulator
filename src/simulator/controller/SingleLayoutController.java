@@ -12,6 +12,7 @@ import java.util.List;
 import simulator.BefehlDecoder;
 import simulator.ValueClass;
 import simulator.ValueClassSpeicher;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -30,6 +31,8 @@ public class SingleLayoutController {
 	private ObservableList<ValueClassSpeicher> data_speicher = FXCollections
 			.observableArrayList();
 	private int programcounter = 0;
+	private Runnable task;
+	private Thread t;
 
 	@FXML
 	private MenuItem openFile;
@@ -274,7 +277,7 @@ public class SingleLayoutController {
 	}
 
 	public void doVisibleRun() {
-		Runnable task = new Runnable() {
+		task = new Runnable() {
 
 			@Override
 			public void run() {
@@ -292,8 +295,62 @@ public class SingleLayoutController {
 			};
 
 		};
-		Thread t = new Thread(task);
+		t = new Thread(task);
 		t.start();
 
+	}
+
+	// Tabelle von oben bis unten abarbeiten
+	public void start2() {
+		Runnable task = new Runnable() {
+			@Override
+			public void run() {
+				int row = 0;
+				for (int i = 0; i < table.getItems().size(); i++) {
+					final int new_row = row;
+					Platform.runLater(new Runnable() {
+						
+						@Override
+						public void run() {
+							updateUiTable(new_row);
+						}
+					});
+					
+					startRun(row);
+					row++;
+				}
+			};
+		};
+		Thread t = new Thread(task);
+		t.start();
+	}
+
+	// Befehlscode einlesen und zur Verarbeitung weitergeben
+	public void startRun(int row) {
+		// BefehlDecoder decoder = new BefehlDecoder();
+				// wenn table_pcl leer ist, dann ist passiert hier nichts
+				if (!table_pcl.getCellData(row).equals("")) {
+					String befehlText = table_code.getCellData(row)
+							.toUpperCase();
+					short befehlCode = (short) Integer.parseInt(befehlText, 16);
+					
+					programcounter++;
+					System.out.println("Befehlscode: " + befehlCode + " ProgrammCounter: " + programcounter);
+
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+
+					// decoder.decode(befehlCode);
+				}
+	}
+	
+	private void updateUiTable(int row){
+		table.getSelectionModel().select(row);
+		table.getFocusModel().focus(row);
+		table.scrollTo(row);
+		
 	}
 }
