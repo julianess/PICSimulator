@@ -16,6 +16,8 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
@@ -26,13 +28,10 @@ import javafx.stage.Stage;
 
 public class SingleLayoutController {
 
-	private ObservableList<ValueClass> data = FXCollections
-			.observableArrayList();
-	private ObservableList<ValueClassSpeicher> data_speicher = FXCollections
-			.observableArrayList();
+	private ObservableList<ValueClass> data = FXCollections.observableArrayList();
+	private ObservableList<ValueClassSpeicher> data_speicher = FXCollections.observableArrayList();
 	private int programcounter = 0;
-	private Runnable task;
-	private Thread t;
+	private Thread t = null;
 
 	@FXML
 	private MenuItem openFile;
@@ -50,52 +49,25 @@ public class SingleLayoutController {
 
 	@FXML
 	private Button button_stop;
-	/*
-	 * @FXML private TableColumn table_zahl;
-	 * 
-	 * @FXML private TableColumn table_00;
-	 * 
-	 * @FXML private TableColumn table_01;
-	 * 
-	 * @FXML private TableColumn table_02;
-	 * 
-	 * @FXML private TableColumn table_03;
-	 * 
-	 * @FXML private TableColumn table_04;
-	 * 
-	 * @FXML private TableColumn table_05;
-	 * 
-	 * @FXML private TableColumn table_06;
-	 * 
-	 * @FXML private TableColumn table_07;
-	 */
+	
+	@FXML
+	private Button button_pause;
+	
 	// Spalten erzeugen
-	TableColumn<ValueClass, String> table_pcl = new TableColumn<ValueClass, String>(
-			"PCL");
-	TableColumn<ValueClass, String> table_code = new TableColumn<ValueClass, String>(
-			"Code");
-	TableColumn<ValueClass, String> table_zusatz = new TableColumn<ValueClass, String>(
-			"Zusatz");
+	TableColumn<ValueClass, String> table_pcl = new TableColumn<ValueClass, String>("PCL");
+	TableColumn<ValueClass, String> table_code = new TableColumn<ValueClass, String>("Code");
+	TableColumn<ValueClass, String> table_zusatz = new TableColumn<ValueClass, String>("Zusatz");
 
 	// Spalten fuer Speicher Tabelle
-	TableColumn<ValueClassSpeicher, String> table_zahl = new TableColumn<ValueClassSpeicher, String>(
-			" ");
-	TableColumn<ValueClassSpeicher, String> table_00 = new TableColumn<ValueClassSpeicher, String>(
-			"00");
-	TableColumn<ValueClassSpeicher, String> table_01 = new TableColumn<ValueClassSpeicher, String>(
-			"01");
-	TableColumn<ValueClassSpeicher, String> table_02 = new TableColumn<ValueClassSpeicher, String>(
-			"02");
-	TableColumn<ValueClassSpeicher, String> table_03 = new TableColumn<ValueClassSpeicher, String>(
-			"03");
-	TableColumn<ValueClassSpeicher, String> table_04 = new TableColumn<ValueClassSpeicher, String>(
-			"04");
-	TableColumn<ValueClassSpeicher, String> table_05 = new TableColumn<ValueClassSpeicher, String>(
-			"05");
-	TableColumn<ValueClassSpeicher, String> table_06 = new TableColumn<ValueClassSpeicher, String>(
-			"06");
-	TableColumn<ValueClassSpeicher, String> table_07 = new TableColumn<ValueClassSpeicher, String>(
-			"07");
+	TableColumn<ValueClassSpeicher, String> table_zahl = new TableColumn<ValueClassSpeicher, String>(" ");
+	TableColumn<ValueClassSpeicher, String> table_00 = new TableColumn<ValueClassSpeicher, String>("00");
+	TableColumn<ValueClassSpeicher, String> table_01 = new TableColumn<ValueClassSpeicher, String>("01");
+	TableColumn<ValueClassSpeicher, String> table_02 = new TableColumn<ValueClassSpeicher, String>("02");
+	TableColumn<ValueClassSpeicher, String> table_03 = new TableColumn<ValueClassSpeicher, String>("03");
+	TableColumn<ValueClassSpeicher, String> table_04 = new TableColumn<ValueClassSpeicher, String>("04");
+	TableColumn<ValueClassSpeicher, String> table_05 = new TableColumn<ValueClassSpeicher, String>("05");
+	TableColumn<ValueClassSpeicher, String> table_06 = new TableColumn<ValueClassSpeicher, String>("06");
+	TableColumn<ValueClassSpeicher, String> table_07 = new TableColumn<ValueClassSpeicher, String>("07");
 
 	// File oeffnen
 	@FXML
@@ -119,16 +91,12 @@ public class SingleLayoutController {
 		table_pcl.setSortable(false);
 		table_pcl.setMinWidth(40);
 		table_pcl.setMaxWidth(40);
-		table_code
-				.setCellValueFactory(new PropertyValueFactory<ValueClass, String>(
-						"text_code"));
+		table_code.setCellValueFactory(new PropertyValueFactory<ValueClass, String>("text_code"));
 		table_code.setEditable(false);
 		table_code.setSortable(false);
 		table_code.setMinWidth(40);
 		table_code.setMaxWidth(40);
-		table_zusatz
-				.setCellValueFactory(new PropertyValueFactory<ValueClass, String>(
-						"text_zusatz"));
+		table_zusatz.setCellValueFactory(new PropertyValueFactory<ValueClass, String>("text_zusatz"));
 		table_zusatz.setEditable(false);
 		table_zusatz.setSortable(false);
 
@@ -192,65 +160,55 @@ public class SingleLayoutController {
 	public void erzeugeSpeicher() {
 		String zeileNummer;
 
-		table_zahl
-				.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>(
-						"text_zahl"));
+		table_zahl.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_zahl"));
 		table_zahl.setEditable(true);
 		table_zahl.setSortable(false);
 		table_zahl.setMinWidth(25);
 		table_zahl.setMaxWidth(25);
 
-		table_00.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>(
-				"text_00"));
+		table_00.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_00"));
 		table_00.setEditable(true);
 		table_00.setSortable(false);
 		table_00.setMinWidth(25);
 		table_00.setMaxWidth(25);
 
-		table_01.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>(
-				"text_01"));
+		table_01.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_01"));
 		table_01.setEditable(true);
 		table_01.setSortable(false);
 		table_01.setMinWidth(25);
 		table_01.setMaxWidth(25);
 
-		table_02.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>(
-				"text_02"));
+		table_02.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_02"));
 		table_02.setEditable(true);
 		table_02.setSortable(false);
 		table_02.setMinWidth(25);
 		table_02.setMaxWidth(25);
 
-		table_03.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>(
-				"text_03"));
+		table_03.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_03"));
 		table_03.setEditable(true);
 		table_03.setSortable(false);
 		table_03.setMinWidth(25);
 		table_03.setMaxWidth(25);
 
-		table_04.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>(
-				"text_04"));
+		table_04.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_04"));
 		table_04.setEditable(true);
 		table_04.setSortable(false);
 		table_04.setMinWidth(25);
 		table_04.setMaxWidth(25);
 
-		table_05.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>(
-				"text_05"));
+		table_05.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_05"));
 		table_05.setEditable(true);
 		table_05.setSortable(false);
 		table_05.setMinWidth(25);
 		table_05.setMaxWidth(25);
 
-		table_06.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>(
-				"text_06"));
+		table_06.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_06"));
 		table_06.setEditable(true);
 		table_06.setSortable(false);
 		table_06.setMinWidth(25);
 		table_06.setMaxWidth(25);
 
-		table_07.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>(
-				"text_07"));
+		table_07.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_07"));
 		table_07.setEditable(true);
 		table_07.setSortable(false);
 		table_07.setMinWidth(25);
@@ -276,81 +234,116 @@ public class SingleLayoutController {
 		speicher.getColumns().add(table_07);
 	}
 
-	public void doVisibleRun() {
-		task = new Runnable() {
-
-			@Override
-			public void run() {
-				for (int i = 0; i < table.getItems().size(); i++) {
-
-					try {
-						Thread.sleep(200);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					table.getSelectionModel().select(i);
-					table.getFocusModel().focus(i);
-					table.scrollTo(i);
-				}
-			};
-
-		};
-		t = new Thread(task);
-		t.start();
-
-	}
-
 	// Tabelle von oben bis unten abarbeiten
-	public void start2() {
-		Runnable task = new Runnable() {
-			@Override
-			public void run() {
-				int row = 0;
-				for (int i = 0; i < table.getItems().size(); i++) {
-					final int new_row = row;
-					Platform.runLater(new Runnable() {
-						
-						@Override
-						public void run() {
-							updateUiTable(new_row);
-						}
-					});
-					
-					startRun(row);
-					row++;
-				}
+	public void startRunningThread() {
+		if (t == null) {
+
+			// Task um die UI Funktionalität nicht zu blockieren
+			Runnable task = new Runnable() {
+				@Override
+				public void run() {
+					int row = 0;
+					for (int i = 0; i < table.getItems().size(); i++) {
+						final int new_row = row;
+						// Task im Task um die UI zu erneuern
+						Platform.runLater(new Runnable() {
+
+							@Override
+							public void run() {
+								updateUiTable(new_row);
+							}
+						});
+						readCode(row);
+						row++;
+					}
+					t = null;
+					programcounter = 0;
+				};
 			};
-		};
-		Thread t = new Thread(task);
-		t.start();
+			t = new Thread(task);
+			t.start();
+		}
+		else {
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Fehler beim Starten");
+			alert.setHeaderText("Das Programm wird bereits ausgeführt");
+			alert.setContentText("Sie haben das Programm bereits gestartet.\n"
+					+ "Beenden Sie erst das laufende Programm und starten Sie es dann erneut.");
+			alert.showAndWait();
+		}
 	}
 
 	// Befehlscode einlesen und zur Verarbeitung weitergeben
-	public void startRun(int row) {
-		// BefehlDecoder decoder = new BefehlDecoder();
-				// wenn table_pcl leer ist, dann ist passiert hier nichts
-				if (!table_pcl.getCellData(row).equals("")) {
-					String befehlText = table_code.getCellData(row)
-							.toUpperCase();
-					short befehlCode = (short) Integer.parseInt(befehlText, 16);
-					
-					programcounter++;
-					System.out.println("Befehlscode: " + befehlCode + " ProgrammCounter: " + programcounter);
-
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-
-					// decoder.decode(befehlCode);
-				}
+	public void readCode(int row) {
+		BefehlDecoder decoder = new BefehlDecoder();
+		 
+		// wenn table_pcl leer ist, dann ist passiert hier nichts
+		if (!table_pcl.getCellData(row).equals("")) {
+			String befehlText = table_code.getCellData(row).toUpperCase();
+			short befehlCode = (short) Integer.parseInt(befehlText, 16);
+			
+			System.out.println("Befehlscode: " + befehlCode + " ProgrammCounter: " + programcounter);
+			
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			// decoder.decode(befehlCode);
+			programcounter++;
+		}
 	}
 	
 	private void updateUiTable(int row){
 		table.getSelectionModel().select(row);
 		table.getFocusModel().focus(row);
 		table.scrollTo(row);
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void stopRunningThread(){
+		if (t != null) {
+			t.stop();
+			t = null;
+			programcounter = 0;
+		}
+		else {
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Fehler beim Stoppen");
+			alert.setHeaderText("Kein Programm gestartet");
+			alert.setContentText("Zur Zeit läuft kein Programm.\n"
+					+ "Starten Sie ein Programm um es beenden zu können.");
+			alert.showAndWait();
+		}
+	}
+	
+	@SuppressWarnings({ "deprecation", "static-access" })
+	public void pauseRunningThread(){
+		Alert alert = new Alert(AlertType.ERROR);
+		String title = "Fehler beim Pausieren";
+		String header = "Programm konnte nicht angehalten werden";
+		String content = "";
 		
+		alert.setTitle(title);
+		alert.setHeaderText(header);
+		
+		if (t == null) {
+			content = "Das Programm wurde nicht gestartet.";
+			alert.setContentText(content);
+			alert.showAndWait();
+		}
+		else if (t.currentThread().getState() == Thread.State.TERMINATED) {
+			content = "Das Programm wurde bereits beendet.";
+			alert.setContentText(content);
+			alert.showAndWait();
+		}
+		else {
+			t.suspend();
+		}
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void resumeRunningThread(){
+		t.resume();
 	}
 }
