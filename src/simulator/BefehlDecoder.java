@@ -1,8 +1,21 @@
 package simulator;
 
 public class BefehlDecoder
-{
+{	
+	//Konstanten zur besseren Lesbarkeit im Code
+	private static short Z = 2;
+	private static short RP0  = 5;
+	private static short FSR1 = 4;
+	private static short FRS2 =  132;
+	private static short STATUS1 = 3;
+	private static short STATUS2 =  131;
+	private static short PCL1 = 2;
+	private static short PCL2 = 130;
+	
 	private short befehlcode;
+	private short wRegister;
+	private short[] statusRegister = new short[8];
+	private short[] speicherZellen = new short[256];
 	
 	public BefehlDecoder (){} //leerer Konstruktor
 
@@ -147,12 +160,19 @@ public class BefehlDecoder
 	}
 
 	private void movwf(short befehlcode2) {
-		// TODO Auto-generated method stub
+		short argument = (short) (befehlcode2 & 127);
 		
+		//Prüfen, ob Bank 1 oder Bank 0; Bank 1: 127 dazu addieren (0x80)
+		if (statusRegister[5] == 1) {
+			argument += 127;
+		}
+		speicherZellen[argument] = wRegister;
 	}
 
 	private void clrw(short befehlcode2) {
-		// TODO Auto-generated method stub
+		wRegister = 0;
+		statusRegister[2] = 1;
+		copyStatus();
 		
 	}
 
@@ -202,7 +222,21 @@ public class BefehlDecoder
 	}
 
 	private void incf(short befehlcode2) {
-		
+		if (speicherZellen[(befehlcode2 & 127)] >= 254) {
+			statusRegister[Z] = 1;
+		}
+		if ((befehlcode2 & 128) == 0) {
+			if (statusRegister[RP0] == 1) {
+				wRegister = (short) (speicherZellen[(befehlcode2 & 127) + 127] += 1);
+			}
+			wRegister = (short) (speicherZellen[befehlcode2 & 127] += 1);
+		}
+		else {
+			if (statusRegister[RP0]  == 1) {
+				speicherZellen[(befehlcode2 & 127) + 127] += 1;
+			}
+			speicherZellen[befehlcode2 & 127] += 1;
+		}
 	}
 
 	private void decfsz(short befehlcode2) {
@@ -261,8 +295,7 @@ public class BefehlDecoder
 	}
 
 	private void movlw(short befehlcode2) {
-		// TODO Auto-generated method stub
-		
+		wRegister = (short) (befehlcode2 & 255);
 	}
 
 	private void retlw(short befehlcode2) {
@@ -293,6 +326,16 @@ public class BefehlDecoder
 	private void addlw(short befehlcode2) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	private void copyStatus(){
+		//ByteArray in eine zahl konvertieren
+		short zahl = 0;
+		for (int i = 0; i < 8; i++) {
+			zahl += (short) (statusRegister[i] * Math.pow(2, (8-i)));
+		}
+		//Status Register in 0x03 und 0x83 speichern
+		speicherZellen[3] = speicherZellen[131] = zahl;
 	}
 	
 }
