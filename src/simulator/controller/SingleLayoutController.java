@@ -30,7 +30,28 @@ public class SingleLayoutController {
 
 	private ObservableList<ValueClass> data = FXCollections.observableArrayList();
 	private ObservableList<ValueClassSpeicher> data_speicher = FXCollections.observableArrayList();
-	private int programcounter = 0;
+	public static int programcounter = 0;
+	public static int [] tos = new int [8];
+	public static short tos_counter = 0;
+	
+	
+	public static void writeCounter()
+	{
+		tos[tos_counter] = programcounter+1;
+		tos_counter ++;
+		tos_counter = (short) (tos_counter & 7);
+	}
+	public static void getCounter()
+	{
+		programcounter = tos[tos_counter];
+		tos_counter--;
+		if(tos_counter < 0)
+		{
+			tos_counter = 7;
+		}
+	}
+	
+
 	private Thread t = null;
 
 	@FXML
@@ -137,7 +158,7 @@ public class SingleLayoutController {
 		}
 	}
 
-	public short run() {
+	public short getLine() {
 		String pclString;
 		if (programcounter < 16)
 			pclString = "000"
@@ -149,8 +170,19 @@ public class SingleLayoutController {
 			pclString = "0" + Integer.toHexString(programcounter).toUpperCase();
 		else
 			pclString = Integer.toHexString(programcounter).toUpperCase();
-		for (int i = 1; i <= table.getItems().size(); i++) {
+		for (int i = 0; i <= table.getItems().size(); i++) {
 			if (table_pcl.getCellData(i).equals(pclString)) {
+				final int row = i;
+				Platform.runLater(new Runnable() {
+					
+					@Override
+					public void run() {
+						updateUiTable(row);
+						
+					}
+				});
+				
+				programcounter ++;
 				return (short) Integer.parseInt(table_code.getCellData(i), 16);
 			}
 		}
@@ -243,19 +275,38 @@ public class SingleLayoutController {
 				@Override
 				public void run() {
 					int row = 0;
-					for (int i = 0; i < table.getItems().size(); i++) {
-						final int new_row = row;
-						// Task im Task um die UI zu erneuern
-						Platform.runLater(new Runnable() {
+					short max_pcl = 0;
 
-							@Override
-							public void run() {
-								updateUiTable(new_row);
-							}
-						});
-						readCode(row);
-						row++;
+					for (int i = 0; i < table.getItems().size(); i++)
+					{
+						if (!table_pcl.getCellData(i).equals("")) {
+							 max_pcl = (short) Integer.parseInt(table_pcl.getCellData(i), 16);
+						}
 					}
+					System.out.println("Max. PCL: " + max_pcl + "\n\n");
+					for (int i = 0; i <= max_pcl; i++)
+					{
+						System.out.println("PCL: " + programcounter+ "  Code: " + getLine() + "\n");
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+					
+//					for (int i = 0; i < table.getItems().size(); i++) {
+//						final int new_row = row;
+//						// Task im Task um die UI zu erneuern
+//						Platform.runLater(new Runnable() {
+//
+//							@Override
+//							public void run() {
+//								updateUiTable(new_row);
+//							}
+//						});
+//						readCode(row);
+//						row++;
+//					}
 					t = null;
 					programcounter = 0;
 				};
@@ -266,7 +317,7 @@ public class SingleLayoutController {
 		else {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Fehler beim Starten");
-			alert.setHeaderText("Das Programm wird bereits ausgeführt");
+			alert.setHeaderText("Das Programm wird bereits ausgefuehrt");
 			alert.setContentText("Sie haben das Programm bereits gestartet.\n"
 					+ "Beenden Sie erst das laufende Programm und starten Sie es dann erneut.");
 			alert.showAndWait();
