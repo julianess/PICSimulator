@@ -4,22 +4,9 @@ import simulator.controller.SingleLayoutController;
 
 public class BefehlDecoder
 {	
-	//Konstanten zur besseren Lesbarkeit im Code
-	private static short Z = 2;
-	private static short RP0  = 5;
-	private static short FSR1 = 4;
-	private static short FRS2 =  132;
-	private static short STATUS1 = 3;
-	private static short STATUS2 =  131;
-	private static short PCL1 = 2;
-	private static short PCL2 = 130;
-	private static short C = 0;
-	private static short DC = 1;
-	
 	private short befehlcode;
-	private short wRegister;
-	private short[] statusRegister = new short[8];
-	private short[] speicherZellen = new short[256];
+	private static short wRegister;
+	private static short[] speicherZellen = new short[256];
 	
 	public BefehlDecoder (){} //leerer Konstruktor
 
@@ -139,8 +126,7 @@ public class BefehlDecoder
 	}
 
 	private void nop() {
-		// TODO Auto-generated method stub
-		
+		SingleLayoutController.programcounter ++;
 	}
 
 	private void returnBefehl() {
@@ -167,7 +153,7 @@ public class BefehlDecoder
 		short argument = (short) (befehlcode2 & 127);
 		
 		//Pruefen, ob Bank 1 oder Bank 0; Bank 1: 127 dazu addieren (0x80)
-		if (statusRegister[5] == 1) {
+		if (StatusRegister.statusBank()) {
 			argument += 127;
 		}
 		speicherZellen[argument] = wRegister;
@@ -175,7 +161,7 @@ public class BefehlDecoder
 
 	private void clrw(short befehlcode2) {
 		wRegister = 0;
-		statusRegister[2] = 1;
+		StatusRegister.setZFlag(true);
 		copyStatus();
 		
 	}
@@ -192,25 +178,26 @@ public class BefehlDecoder
 		short k = (short) ((speicherZellen[f] ^ 255)+1); //Zweierkomplement -> Gleiche Methode wie addwf
 		
 		if((k & 15 + wRegister & 15) >= 16) {
-			statusRegister[DC] = 1;
+			StatusRegister.setDigitCarryBit(true);
 		}
 		else {
-			statusRegister[DC] = 0;
+			StatusRegister.setCarryBit(false);
 		}
 		
-		//mit Überlauf über 255
+		//mit Ueberlauf Ueber 255
 		if(wRegister + k > 255)
 		{
-			statusRegister[C] = 1; //Carry Bit setzen
+			//Carry Bit setzen
+			StatusRegister.setCarryBit(true);
 			
 			if(wRegister + k == 256) {
-				statusRegister[Z] = 1;
+				StatusRegister.setZFlag(true);
 			}
 			else {
-				statusRegister[Z] = 0;
+				StatusRegister.setZFlag(false);
 			}
 			
-			//Nach Überlauf wieder bei 0 anfangen
+			//Nach ï¿½berlauf wieder bei 0 anfangen
 			if(d == 0)
 			{
 				wRegister = (short) (wRegister + k - 256);
@@ -221,7 +208,7 @@ public class BefehlDecoder
 			}
 		}
 		else {
-			statusRegister[C] = 0; //Carry Bit leeren
+			StatusRegister.setCarryBit(false); //Carry Bit leeren
 			
 			if(d == 0)
 			{
@@ -260,25 +247,25 @@ public class BefehlDecoder
 		short f = (short)(befehlcode2 & 127);
 		
 		if((speicherZellen[f] & 15 + wRegister & 15) >= 16) {
-			statusRegister[DC] = 1;
+			StatusRegister.setDigitCarryBit(true);
 		}
 		else {
-			statusRegister[DC] = 0;
+			StatusRegister.setDigitCarryBit(false);
 		}
 		
-		//mit Überlauf über 255
+		//mit Ueberlauf Ueber 255
 		if(wRegister + speicherZellen[f] > 255)
 		{
-			statusRegister[C] = 1; //Carry Bit setzen
+			StatusRegister.setCarryBit(true); //Carry Bit setzen
 			
 			if(wRegister + speicherZellen[f] == 256) {
-				statusRegister[Z] = 1;
+				StatusRegister.setZFlag(true);
 			}
 			else {
-				statusRegister[Z] = 0;
+				StatusRegister.setZFlag(false);
 			}
 			
-			//Nach Überlauf wieder bei 0 anfangen
+			//Nach Ueberlauf wieder bei 0 anfangen
 			if(d == 0)
 			{
 				wRegister = (short) (wRegister + speicherZellen[f] - 256);
@@ -289,7 +276,8 @@ public class BefehlDecoder
 			}
 		}
 		else {
-			statusRegister[C] = 0; //Carry Bit leeren
+			//Carry Bit leeren
+			StatusRegister.setCarryBit(false);
 			
 			if(d == 0)
 			{
@@ -315,11 +303,11 @@ public class BefehlDecoder
 		
 		if(tmp == 0)
 		{
-			statusRegister[Z] = 1;
+			StatusRegister.setZFlag(true);
 		}
 		else
 		{
-			statusRegister[Z] = 0;
+			StatusRegister.setZFlag(false);
 		}
 				
 		if(d == 0)
@@ -336,19 +324,20 @@ public class BefehlDecoder
 		//Adresse f maskieren auf 7 bit
 		short f = (short) (befehlcode2 & 127);
 		
-		if (statusRegister[RP0] == 1){
+		if (StatusRegister.statusBank()){
 			f += 128;	
 		}
 		
 		if (speicherZellen[f] >= 254) {
-			statusRegister[Z] = 1;
+			StatusRegister.setZFlag(true);
 		}
 		else{
-			statusRegister[Z] = 0;
+			StatusRegister.setZFlag(false);
 		}
 		
 		if ((befehlcode2 & 128) == 0) {
-			if(statusRegister[Z] == 0) {
+			//Abfrage ob Z-Flag NICHT! gesetzt ist
+			if(!StatusRegister.statusZFlag()) {
 				wRegister = (short) (speicherZellen[f] += 1);
 			}
 			else {
@@ -356,7 +345,8 @@ public class BefehlDecoder
 			}
 		}
 		else {
-			if(statusRegister[Z] == 0) {
+			//Abfrage ob Z-Flag NICHT! gesetzt ist
+			if(!StatusRegister.statusZFlag()) {
 				speicherZellen[f] += 1;
 			}
 			else {
@@ -370,36 +360,30 @@ public class BefehlDecoder
 		
 		short d = (short) (befehlcode2 & 128);
 		short f = (short) (befehlcode2 & 127);
+		short result = 0;
 		
-		//Ergebnis in W-Register
-		if(d == 0)
-		{
-			//Bank 1 oder Bank 0, wenn Bank 1, Adresse um 128 erhöhen
-			if(statusRegister[RP0] == 1)
-			{
+		//Bank 1 oder Bank 0, wenn Bank 1, Adresse um 128 erhoehen
+		if(StatusRegister.statusBank()){
 				f += 128;
 			}
-			
-			if(statusRegister[f] == 0)
-			{
-				wRegister = 255;
+		
+		if(speicherZellen[f] == 0){
+				result = 255;
 			}
-			else
-			{
-				wRegister = (short) (statusRegister[f] - 1);
+			else{
+				result = (short) (speicherZellen[f] - 1);
 			}
+		
+		//Ergebnis in W-Register
+		if(d == 0){
+			wRegister = result;
 		}
 		//Ergebnis in f
-		else
-		{
-			if(statusRegister[f] == 0)
-			{
-				statusRegister[f] = 255;
-			}
-			else
-			{
-				statusRegister[f] = (short) (statusRegister[f] - 1);
-			}
+		else{
+			speicherZellen[f] = result;
+		}
+		if (result == 0) {
+			nop();
 		}
 	}
 
@@ -432,7 +416,7 @@ public class BefehlDecoder
 		short b = (short) (befehlcode2 & 896);
 		short f = (short) (befehlcode2 & 127);
 		
-		//WEITER MACHEN!!!
+		//TODO WEITER MACHEN!!!
 		
 	}
 
@@ -494,42 +478,39 @@ public class BefehlDecoder
 		//Literal l maskieren
 		short l = (short) (befehlcode2 & 255);
 		
-		//mit Überlauf der hinteren 4 bit
+		//mit Ueberlauf der hinteren 4 bit
 		if((l & 15 + wRegister & 15) >= 16) {
-			statusRegister[DC] = 1;
+			StatusRegister.setDigitCarryBit(true);
 		}
 		else {
-			statusRegister[DC] = 0;
+			StatusRegister.setDigitCarryBit(false);
 		}
 		
-		//mit Überlauf über 255
+		//mit Ueberlauf ueber 255
 		if(wRegister + l > 255)
 		{
-			statusRegister[C] = 1; //Carry Bit setzen
+			//Carry Bit setzen
+			StatusRegister.setCarryBit(true);
 			if(wRegister + l == 256) {
-				statusRegister[Z] = 1;
+				StatusRegister.setZFlag(true);
 			}
 			else {
-				statusRegister[Z] = 0;
+				StatusRegister.setZFlag(false);
 			}
 			
-			//Nach Überlauf wieder bei 0 anfangen
+			//Nach Ueberlauf wieder bei 0 anfangen
 			wRegister = (short) (wRegister + l - 256);
 		}
 		else {
-			statusRegister[C] = 0; //Carry Bit leeren
+			//Carry Bit leeren
+			StatusRegister.setCarryBit(false);
 			wRegister = (short) (wRegister + l);
 		}		
 	}
 	
 	private void copyStatus(){
-		//ByteArray in eine Zahl konvertieren
-		short zahl = 0;
-		for (int i = 0; i < 8; i++) {
-			zahl += (short) (statusRegister[i] * Math.pow(2, (8-i)));
-		}
 		//Status Register in 0x03 und 0x83 speichern
-		speicherZellen[3] = speicherZellen[131] = zahl;
+		speicherZellen[3] = speicherZellen[131] = StatusRegister.registerToInt();
 	}
 	
 }

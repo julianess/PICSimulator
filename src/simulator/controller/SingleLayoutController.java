@@ -105,9 +105,7 @@ public class SingleLayoutController {
 		Path file = Paths.get(fileChooser.showOpenDialog(primaryStage)
 				.getPath());
 
-		table_pcl
-				.setCellValueFactory(new PropertyValueFactory<ValueClass, String>(
-						"text_pcl"));
+		table_pcl.setCellValueFactory(new PropertyValueFactory<ValueClass, String>("text_pcl"));
 		table_pcl.setEditable(false);
 		table_pcl.setSortable(false);
 		table_pcl.setMinWidth(40);
@@ -268,13 +266,14 @@ public class SingleLayoutController {
 
 	// Tabelle von oben bis unten abarbeiten
 	public void startRunningThread() {
+		BefehlDecoder decoder = new BefehlDecoder();
+		
 		if (t == null) {
 
 			// Task um die UI Funktionalität nicht zu blockieren
 			Runnable task = new Runnable() {
 				@Override
 				public void run() {
-					int row = 0;
 					short max_pcl = 0;
 
 					for (int i = 0; i < table.getItems().size(); i++)
@@ -294,19 +293,6 @@ public class SingleLayoutController {
 						}
 					}
 					
-//					for (int i = 0; i < table.getItems().size(); i++) {
-//						final int new_row = row;
-//						// Task im Task um die UI zu erneuern
-//						Platform.runLater(new Runnable() {
-//
-//							@Override
-//							public void run() {
-//								updateUiTable(new_row);
-//							}
-//						});
-//						readCode(row);
-//						row++;
-//					}
 					t = null;
 					programcounter = 0;
 				};
@@ -326,9 +312,8 @@ public class SingleLayoutController {
 
 	// Befehlscode einlesen und zur Verarbeitung weitergeben
 	public void readCode(int row) {
-		BefehlDecoder decoder = new BefehlDecoder();
-		 
-		// wenn table_pcl leer ist, dann ist passiert hier nichts
+		
+		// wenn table_pcl leer ist, dann passiert hier nichts
 		if (!table_pcl.getCellData(row).equals("")) {
 			String befehlText = table_code.getCellData(row).toUpperCase();
 			short befehlCode = (short) Integer.parseInt(befehlText, 16);
@@ -340,7 +325,6 @@ public class SingleLayoutController {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			// decoder.decode(befehlCode);
 			programcounter++;
 		}
 	}
