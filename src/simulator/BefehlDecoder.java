@@ -7,7 +7,7 @@ public class BefehlDecoder
 	private static final short FSR = 4;
 	private short befehlcode;
 	private static short wRegister;
-	private static short[] speicherZellen = new short[256];
+	public static short[] speicherZellen = new short[256];
 	
 	public BefehlDecoder (){} //leerer Konstruktor
 
@@ -21,6 +21,7 @@ public class BefehlDecoder
 	
 	public void decode(short befehlcode)
 	{
+		System.out.println("ruft auf mit " + befehlcode);
 		short befehl = 0;
 		
 		if(befehlcode >= 15360)
@@ -28,7 +29,7 @@ public class BefehlDecoder
 			befehl = (short) (befehlcode & 15872);
 			if (befehl == 15872)
 				addlw(befehlcode);
-			else if(befehlcode == 15360)
+			else if(befehl == 15360)
 				sublw(befehlcode);
 		}
 		else if(befehlcode >= 14336)
@@ -60,13 +61,14 @@ public class BefehlDecoder
 		else if(befehlcode >= 4096)
 		{
 			befehl = (short) (befehlcode & 15360);
+
 			if(befehl == 7168)
 				btfss(befehlcode);
 			else if(befehl == 6144)
 				btfsc(befehlcode);
-			else if(befehlcode == 5120)
+			else if(befehl == 5120)
 				bsf(befehlcode);
-			else if(befehlcode == 4096)
+			else if(befehl == 4096)
 				bcf(befehlcode);
 		}
 		else if(befehlcode >= 512)
@@ -158,13 +160,17 @@ public class BefehlDecoder
 			f += 127;
 		}
 		speicherZellen[f] = wRegister;
+		
+		SingleLayoutController.programcounter ++;
+		StatusRegister.setStatus();
 	}
 
 	private void clrw(short befehlcode2) {
 		wRegister = 0;
 		StatusRegister.setZFlag(true);
-		copyStatus();
+		StatusRegister.copyStatus();
 		
+		SingleLayoutController.programcounter ++;
 	}
 
 	private void clrf(short befehlcode2) {
@@ -219,7 +225,10 @@ public class BefehlDecoder
 			{
 				speicherZellen[f] = (short) (wRegister + k);
 			}
-		}		
+		}
+		
+		SingleLayoutController.programcounter ++;
+		StatusRegister.setStatus();
 	}
 
 	private void decf(short befehlcode2) {
@@ -288,7 +297,10 @@ public class BefehlDecoder
 			{
 				speicherZellen[f] = (short) (wRegister + speicherZellen[f]);
 			}
-		}			
+		}
+		
+		SingleLayoutController.programcounter ++;
+		StatusRegister.setStatus();
 	}
 
 	private void movf(short befehlcode2) {
@@ -319,6 +331,9 @@ public class BefehlDecoder
 		{
 			speicherZellen[f] = tmp;
 		}	
+		
+		SingleLayoutController.programcounter ++;
+		StatusRegister.setStatus();
 	}
 
 	private void incf(short befehlcode2) {
@@ -354,7 +369,9 @@ public class BefehlDecoder
 				speicherZellen[f] = 0;
 			}
 		}
-		copyStatus();
+		StatusRegister.setStatus();
+		StatusRegister.copyStatus();
+		SingleLayoutController.programcounter ++;
 	}
 
 	private void decfsz(short befehlcode2) {
@@ -386,6 +403,9 @@ public class BefehlDecoder
 		if (result == 0) {
 			nop();
 		}
+		
+		SingleLayoutController.programcounter ++;
+		StatusRegister.setStatus();
 	}
 
 	private void rrf(short befehlcode2) {
@@ -409,26 +429,59 @@ public class BefehlDecoder
 	}
 
 	private void bcf(short befehlcode2) {
-		// TODO Auto-generated method stub
+		short b = (short) ((befehlcode2 & 896) >>> 7);
+		short f = maskiereAdresse(befehlcode2); //(short) (befehlcode2 & 127);
+		
+		short wert = (short) (speicherZellen[f] & (int) Math.pow(2,b));
+		if(wert != 0){
+			speicherZellen[f] -= (short) Math.pow(2,b);
+		}
+		
+		SingleLayoutController.programcounter ++;
+		StatusRegister.setStatus();
 		
 	}
 
 	private void bsf(short befehlcode2) {
-		short b = (short) (befehlcode2 & 896);
+		short b = (short) ((befehlcode2 & 896) >>> 7);
 		short f = maskiereAdresse(befehlcode2); //(short) (befehlcode2 & 127);
 		
-		//TODO WEITER MACHEN!!!
+		System.out.println("b: " + b + "   f: " +f);
 		
+		short wert = (short) (speicherZellen[f] & (int) Math.pow(2,b));
+		System.out.println("wert: " + wert);
+		if(wert == 0){
+			speicherZellen[f] += (short) Math.pow(2,b);
+			System.out.println("In if");
+		}	
+		System.out.println("Ende");
+		
+		SingleLayoutController.programcounter ++;
+		StatusRegister.setStatus();
 	}
 
 	private void btfsc(short befehlcode2) {
-		// TODO Auto-generated method stub
+		short b = (short) ((befehlcode2 & 896) >>> 7);
+		short f = maskiereAdresse(befehlcode2); //(short) (befehlcode2 & 127);
 		
+		if((short) (speicherZellen[f] & (int) Math.pow(2,b)) == 0){
+			nop();
+		}
+		
+		SingleLayoutController.programcounter ++;
+		StatusRegister.setStatus();
 	}
 
 	private void btfss(short befehlcode2) {
-		// TODO Auto-generated method stub
+		short b = (short) ((befehlcode2 & 896) >>> 7);
+		short f = maskiereAdresse(befehlcode2); //(short) (befehlcode2 & 127);
 		
+		if((short) (speicherZellen[f] & (int) Math.pow(2,b)) != 0){
+			nop();
+		}
+		
+		SingleLayoutController.programcounter ++;
+		StatusRegister.setStatus();
 	}
 
 	private void call(short befehlcode2) {
@@ -446,12 +499,14 @@ public class BefehlDecoder
 
 	private void movlw(short befehlcode2) {
 		wRegister = (short) (befehlcode2 & 255);
+		
+		SingleLayoutController.programcounter ++;
 	}
 
 	private void retlw(short befehlcode2) {
 		short k = (short)(befehlcode2 & 255);
 		wRegister = k;
-		SingleLayoutController.getCounter();	
+		SingleLayoutController.getCounter();
 	}
 
 	private void iorlw(short befehlcode2) {
@@ -506,12 +561,9 @@ public class BefehlDecoder
 			//Carry Bit leeren
 			StatusRegister.setCarryBit(false);
 			wRegister = (short) (wRegister + l);
-		}		
-	}
-	
-	private void copyStatus(){
-		//Status Register in 0x03 und 0x83 speichern
-		speicherZellen[3] = speicherZellen[131] = StatusRegister.registerToInt();
+		}	
+		
+		SingleLayoutController.programcounter ++;
 	}
 	
 	//f maskieren und auf 0 pruefen. Ggf. Adresse ueber FSR beziehen

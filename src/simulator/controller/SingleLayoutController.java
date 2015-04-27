@@ -31,8 +31,10 @@ public class SingleLayoutController {
 	private ObservableList<ValueClass> data = FXCollections.observableArrayList();
 	private ObservableList<ValueClassSpeicher> data_speicher = FXCollections.observableArrayList();
 	public static int programcounter = 0;
+	private int max_pcl = 0;
 	public static int [] tos = new int [8];
 	public static short tos_counter = 0;
+	public static boolean pause = false;
 	
 	
 	public static void writeCounter()
@@ -43,8 +45,8 @@ public class SingleLayoutController {
 	}
 	public static void getCounter()
 	{
-		programcounter = tos[tos_counter];
 		tos_counter--;
+		programcounter = tos[tos_counter];
 		if(tos_counter < 0)
 		{
 			tos_counter = 7;
@@ -180,7 +182,6 @@ public class SingleLayoutController {
 					}
 				});
 				
-				programcounter ++;
 				return (short) Integer.parseInt(table_code.getCellData(i), 16);
 			}
 		}
@@ -274,7 +275,6 @@ public class SingleLayoutController {
 			Runnable task = new Runnable() {
 				@Override
 				public void run() {
-					short max_pcl = 0;
 
 					for (int i = 0; i < table.getItems().size(); i++)
 					{
@@ -283,18 +283,26 @@ public class SingleLayoutController {
 						}
 					}
 					System.out.println("Max. PCL: " + max_pcl + "\n\n");
-					for (int i = 0; i <= max_pcl; i++)
+					for (int i = 0; i <= max_pcl; i = programcounter)
 					{
-						System.out.println("PCL: " + programcounter+ "  Code: " + getLine() + "\n");
+						short test = getLine();
+						System.out.println("PCL: " + programcounter+ "  Code: " + test + "\n");
+						decoder.decode(test);
 						try {
 							Thread.sleep(100);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
+						if(pause){
+							break;
+						}
 					}
-					
-					t = null;
-					programcounter = 0;
+					if(programcounter >= max_pcl)
+					{
+						t = null;
+						programcounter = 0;
+						max_pcl = 0;
+					}
 				};
 			};
 			t = new Thread(task);
@@ -311,23 +319,23 @@ public class SingleLayoutController {
 	}
 
 	// Befehlscode einlesen und zur Verarbeitung weitergeben
-	public void readCode(int row) {
-		
-		// wenn table_pcl leer ist, dann passiert hier nichts
-		if (!table_pcl.getCellData(row).equals("")) {
-			String befehlText = table_code.getCellData(row).toUpperCase();
-			short befehlCode = (short) Integer.parseInt(befehlText, 16);
-			
-			System.out.println("Befehlscode: " + befehlCode + " ProgrammCounter: " + programcounter);
-			
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			programcounter++;
-		}
-	}
+//	public void readCode(int row) {
+//		
+//		// wenn table_pcl leer ist, dann passiert hier nichts
+//		if (!table_pcl.getCellData(row).equals("")) {
+//			String befehlText = table_code.getCellData(row).toUpperCase();
+//			short befehlCode = (short) Integer.parseInt(befehlText, 16);
+//			
+//			System.out.println("Befehlscode: " + befehlCode + " ProgrammCounter: " + programcounter);
+//			
+//			try {
+//				Thread.sleep(100);
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
+//			programcounter++;
+//		}
+//	}
 	
 	private void updateUiTable(int row){
 		table.getSelectionModel().select(row);
@@ -373,7 +381,14 @@ public class SingleLayoutController {
 			alert.showAndWait();
 		}
 		else {
-			t.suspend();
+			//t.suspend();
+			if(pause){
+				pause = false;
+			}
+			else{
+				pause = true;
+			}
+			System.out.println(pause);
 		}
 	}
 	

@@ -67,10 +67,26 @@ public class StatusRegister {
 		
 		for (int i = 0; i < register.length; i++) {
 			if (register[i]) {
-				result += Math.pow(2, (8-i));
+				result += Math.pow(2, (i));
 			}
 		}
 		return result;
 	}
 	
+	public static void copyStatus(){
+		//Status Register in 0x03 und 0x83 speichern
+		BefehlDecoder.speicherZellen[3] = BefehlDecoder.speicherZellen[131] = StatusRegister.registerToInt();
+	}
+	
+	public static void setStatus(){
+		short test = BefehlDecoder.speicherZellen[3];
+		for (int i = 0; i < register.length; i++){
+			if((test & (short) Math.pow(2, i)) != 0){
+				register[i] = true;
+			}
+			else{
+				register[i] = false;
+			}
+		}
+	}
 }
