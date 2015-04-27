@@ -60,22 +60,62 @@
                                        <children>
                                           <AnchorPane prefHeight="200.0" prefWidth="200.0">
                                              <children>
-                                                <Label layoutX="9.0" layoutY="8.0" prefHeight="16.0" prefWidth="83.0" text="W-Register:" AnchorPane.leftAnchor="2.0" />
+                                                <Label layoutX="9.0" layoutY="8.0" prefHeight="16.0" prefWidth="83.0" text="W-Register:" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="0.0" />
                                              </children>
                                           </AnchorPane>
                                           <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="5">
                                              <children>
-                                                <Label layoutY="6.0" text="Programmcounter:" AnchorPane.leftAnchor="2.0" />
+                                                <Label layoutY="6.0" text="Programmcounter:" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="0.0" />
                                              </children>
                                           </AnchorPane>
                                           <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
                                              <children>
-                                                <Label contentDisplay="RIGHT" layoutX="28.0" layoutY="6.0" text="0" AnchorPane.rightAnchor="20.0" />
+                                                <Label fx:id="label_programcounter" contentDisplay="RIGHT" layoutX="28.0" layoutY="6.0" text="0x00" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="0.0" />
                                              </children>
                                           </AnchorPane>
                                           <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
                                              <children>
-                                                <Label layoutX="36.0" layoutY="8.0" text="0" AnchorPane.rightAnchor="20.0" />
+                                                <Label fx:id="label_wRegister" layoutX="36.0" layoutY="8.0" text="0x00" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="0.0" />
+                                             </children>
+                                          </AnchorPane>
+                                          <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+                                             <children>
+                                                <Label layoutX="17.0" layoutY="4.0" text="PCL:" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="0.0" />
+                                             </children>
+                                          </AnchorPane>
+                                          <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                             <children>
+                                                <Label fx:id="label_pcl" layoutX="46.0" layoutY="4.0" text="0x00" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="0.0" />
+                                             </children>
+                                          </AnchorPane>
+                                          <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="2">
+                                             <children>
+                                                <Label layoutX="17.0" layoutY="4.0" text="FSR:" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="0.0" />
+                                             </children>
+                                          </AnchorPane>
+                                          <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                             <children>
+                                                <Label fx:id="label_fsr" layoutX="46.0" layoutY="4.0" text="0x00" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="0.0" />
+                                             </children>
+                                          </AnchorPane>
+                                          <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="3">
+                                             <children>
+                                                <Label layoutX="18.0" layoutY="4.0" text="PCLATH:" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="0.0" />
+                                             </children>
+                                          </AnchorPane>
+                                          <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                             <children>
+                                                <Label fx:id="label_pclath" layoutX="78.0" layoutY="4.0" text="0x00" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="0.0" />
+                                             </children>
+                                          </AnchorPane>
+                                          <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="4">
+                                             <children>
+                                                <Label layoutX="18.0" layoutY="4.0" text="Status" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="0.0" />
+                                             </children>
+                                          </AnchorPane>
+                                          <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                                             <children>
+                                                <Label fx:id="label_status" layoutX="83.0" layoutY="4.0" text="0x00" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="0.0" />
                                              </children>
                                           </AnchorPane>
                                        </children>

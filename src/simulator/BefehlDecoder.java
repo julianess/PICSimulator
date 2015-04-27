@@ -6,7 +6,7 @@ public class BefehlDecoder
 {	
 	private static final short FSR = 4;
 	private short befehlcode;
-	private static short wRegister;
+	public static short wRegister;
 	public static short[] speicherZellen = new short[256];
 	
 	public BefehlDecoder (){} //leerer Konstruktor

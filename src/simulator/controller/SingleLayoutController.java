@@ -19,6 +19,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -66,15 +67,27 @@ public class SingleLayoutController {
 	// Speicher Tabelle
 	@FXML
 	private TableView<ValueClassSpeicher> speicher;
-
 	@FXML
 	private Button button_start;
-
 	@FXML
 	private Button button_stop;
-	
 	@FXML
 	private Button button_pause;
+	@FXML
+	private Label label_wRegister;
+	@FXML
+	private Label label_pcl;
+	@FXML
+	private Label label_fsr;
+	@FXML
+	private Label label_pclath;
+	@FXML
+	private Label label_status;
+	@FXML
+	private Label label_programcounter;
+	
+	
+	
 	
 	// Spalten erzeugen
 	TableColumn<ValueClass, String> table_pcl = new TableColumn<ValueClass, String>("PCL");
@@ -285,6 +298,25 @@ public class SingleLayoutController {
 					System.out.println("Max. PCL: " + max_pcl + "\n\n");
 					for (int i = 0; i <= max_pcl; i = programcounter)
 					{
+						//Register eintrage aktualisieren
+						Platform.runLater(new Runnable() {
+							
+							@Override
+							public void run() {
+								felderAktualisieren();
+							}
+						});
+						
+						if(pause){
+							synchronized (t) {
+								try {
+									t.wait();
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+						
 						short test = getLine();
 						System.out.println("PCL: " + programcounter+ "  Code: " + test + "\n");
 						decoder.decode(test);
@@ -293,9 +325,7 @@ public class SingleLayoutController {
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
-						if(pause){
-							break;
-						}
+						
 					}
 					if(programcounter >= max_pcl)
 					{
@@ -317,25 +347,6 @@ public class SingleLayoutController {
 			alert.showAndWait();
 		}
 	}
-
-	// Befehlscode einlesen und zur Verarbeitung weitergeben
-//	public void readCode(int row) {
-//		
-//		// wenn table_pcl leer ist, dann passiert hier nichts
-//		if (!table_pcl.getCellData(row).equals("")) {
-//			String befehlText = table_code.getCellData(row).toUpperCase();
-//			short befehlCode = (short) Integer.parseInt(befehlText, 16);
-//			
-//			System.out.println("Befehlscode: " + befehlCode + " ProgrammCounter: " + programcounter);
-//			
-//			try {
-//				Thread.sleep(100);
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
-//			}
-//			programcounter++;
-//		}
-//	}
 	
 	private void updateUiTable(int row){
 		table.getSelectionModel().select(row);
@@ -360,7 +371,7 @@ public class SingleLayoutController {
 		}
 	}
 	
-	@SuppressWarnings({ "deprecation", "static-access" })
+	@SuppressWarnings({"static-access" })
 	public void pauseRunningThread(){
 		Alert alert = new Alert(AlertType.ERROR);
 		String title = "Fehler beim Pausieren";
@@ -381,9 +392,11 @@ public class SingleLayoutController {
 			alert.showAndWait();
 		}
 		else {
-			//t.suspend();
 			if(pause){
 				pause = false;
+				synchronized (t) {
+					t.notify();
+				}
 			}
 			else{
 				pause = true;
@@ -391,9 +404,15 @@ public class SingleLayoutController {
 			System.out.println(pause);
 		}
 	}
-	
-	@SuppressWarnings("deprecation")
-	public void resumeRunningThread(){
-		t.resume();
+
+	private void felderAktualisieren(){
+		
+		BefehlDecoder.speicherZellen[0x2] = BefehlDecoder.speicherZellen[0x82] = (short) programcounter;
+		
+		label_wRegister.setText("0x" + Integer.toHexString(BefehlDecoder.wRegister).toUpperCase());
+		label_pcl.setText("0x" + Integer.toHexString(BefehlDecoder.speicherZellen[2]).toUpperCase());
+		label_pclath.setText("0x" + Integer.toHexString(BefehlDecoder.speicherZellen[10]).toUpperCase());
+		label_fsr.setText("0x" + Integer.toHexString(BefehlDecoder.speicherZellen[4]).toUpperCase());
+		label_programcounter.setText("0x" + Integer.toHexString(programcounter).toUpperCase());
 	}
 }

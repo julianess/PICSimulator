@@ -1,7 +1,5 @@
 package simulator;
 
-import simulator.controller.SingleLayoutController;
-
 public class StatusRegister {
 	private static final short Z = 2;
 	private static final short BANK  = 5;
