@@ -4,6 +4,7 @@ import simulator.controller.SingleLayoutController;
 
 public class BefehlDecoder
 {	
+	private static final short FSR = 4;
 	private short befehlcode;
 	private static short wRegister;
 	private static short[] speicherZellen = new short[256];
@@ -150,13 +151,13 @@ public class BefehlDecoder
 	}
 
 	private void movwf(short befehlcode2) {
-		short argument = (short) (befehlcode2 & 127);
+		short f = maskiereAdresse(befehlcode2); //(short) (befehlcode2 & 127);
 		
 		//Pruefen, ob Bank 1 oder Bank 0; Bank 1: 127 dazu addieren (0x80)
 		if (StatusRegister.statusBank()) {
-			argument += 127;
+			f += 127;
 		}
-		speicherZellen[argument] = wRegister;
+		speicherZellen[f] = wRegister;
 	}
 
 	private void clrw(short befehlcode2) {
@@ -173,7 +174,7 @@ public class BefehlDecoder
 
 	private void subwf(short befehlcode2) {
 		short d = (short) (befehlcode2 & 128);
-		short f = (short) (befehlcode2 & 127);
+		short f = maskiereAdresse(befehlcode2); //(short) (befehlcode2 & 127);
 		
 		short k = (short) ((speicherZellen[f] ^ 255)+1); //Zweierkomplement -> Gleiche Methode wie addwf
 		
@@ -244,7 +245,7 @@ public class BefehlDecoder
 	private void addwf(short befehlcode2) {
 		
 		short d = (short)(befehlcode2 & 128);
-		short f = (short)(befehlcode2 & 127);
+		short f = maskiereAdresse(befehlcode2); //(short)(befehlcode2 & 127);
 		
 		if((speicherZellen[f] & 15 + wRegister & 15) >= 16) {
 			StatusRegister.setDigitCarryBit(true);
@@ -297,7 +298,7 @@ public class BefehlDecoder
 
 	private void comf(short befehlcode2) {
 		short d = (short)(befehlcode2 & 128);
-		short f = (short)(befehlcode2 & 127);
+		short f = maskiereAdresse(befehlcode2); //(short)(befehlcode2 & 127);
 		//temporaere Variable fuer das Ergebnis
 		short tmp = (short) (speicherZellen[f] ^ 255);
 		
@@ -322,7 +323,7 @@ public class BefehlDecoder
 
 	private void incf(short befehlcode2) {
 		//Adresse f maskieren auf 7 bit
-		short f = (short) (befehlcode2 & 127);
+		short f = maskiereAdresse(befehlcode2); //(short) (befehlcode2 & 127);
 		
 		if (StatusRegister.statusBank()){
 			f += 128;	
@@ -359,7 +360,7 @@ public class BefehlDecoder
 	private void decfsz(short befehlcode2) {
 		
 		short d = (short) (befehlcode2 & 128);
-		short f = (short) (befehlcode2 & 127);
+		short f = maskiereAdresse(befehlcode2); //(short) (befehlcode2 & 127);
 		short result = 0;
 		
 		//Bank 1 oder Bank 0, wenn Bank 1, Adresse um 128 erhoehen
@@ -414,7 +415,7 @@ public class BefehlDecoder
 
 	private void bsf(short befehlcode2) {
 		short b = (short) (befehlcode2 & 896);
-		short f = (short) (befehlcode2 & 127);
+		short f = maskiereAdresse(befehlcode2); //(short) (befehlcode2 & 127);
 		
 		//TODO WEITER MACHEN!!!
 		
@@ -511,6 +512,17 @@ public class BefehlDecoder
 	private void copyStatus(){
 		//Status Register in 0x03 und 0x83 speichern
 		speicherZellen[3] = speicherZellen[131] = StatusRegister.registerToInt();
+	}
+	
+	//f maskieren und auf 0 pruefen. Ggf. Adresse ueber FSR beziehen
+	private short maskiereAdresse(short code)
+	{
+		short adresse = (short) (code & 127);
+		if(adresse == 0)
+		{
+			return (short) speicherZellen[speicherZellen[FSR]];
+		}
+		return adresse;
 	}
 	
 }
