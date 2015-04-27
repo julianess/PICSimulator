@@ -15,6 +15,7 @@ import simulator.ValueClassSpeicher;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -29,6 +30,8 @@ import javafx.stage.Stage;
 
 public class SingleLayoutController {
 
+	private static final short PORT_A = 5;
+	private static final short PORT_B = 6;
 	private ObservableList<ValueClass> data = FXCollections.observableArrayList();
 	private ObservableList<ValueClassSpeicher> data_speicher = FXCollections.observableArrayList();
 	public static int programcounter = 0;
@@ -86,6 +89,74 @@ public class SingleLayoutController {
 	@FXML
 	private Label label_programcounter;
 	
+	//RA0 Register mit TrisA
+	@FXML
+	private Label label_trisa_0;
+	@FXML
+	private Label label_trisa_1;
+	@FXML
+	private Label label_trisa_2;
+	@FXML
+	private Label label_trisa_3;
+	@FXML
+	private Label label_trisa_4;
+	@FXML
+	private Label label_trisa_5;
+	@FXML
+	private Label label_trisa_6;
+	@FXML
+	private Label label_trisa_7;
+	@FXML
+	private Label label_pina_0;
+	@FXML
+	private Label label_pina_1;
+	@FXML
+	private Label label_pina_2;
+	@FXML
+	private Label label_pina_3;
+	@FXML
+	private Label label_pina_4;
+	@FXML
+	private Label label_pina_5;
+	@FXML
+	private Label label_pina_6;
+	@FXML
+	private Label label_pina_7;
+	
+	
+	//RB0 Register mit TrisB
+	@FXML
+	private Label label_trisb_0;
+	@FXML
+	private Label label_trisb_1;
+	@FXML
+	private Label label_trisb_2;
+	@FXML
+	private Label label_trisb_3;
+	@FXML
+	private Label label_trisb_4;
+	@FXML
+	private Label label_trisb_5;
+	@FXML
+	private Label label_trisb_6;
+	@FXML
+	private Label label_trisb_7;
+	@FXML
+	private Label label_pinb_0;
+	@FXML
+	private Label label_pinb_1;
+	@FXML
+	private Label label_pinb_2;
+	@FXML
+	private Label label_pinb_3;
+	@FXML
+	private Label label_pinb_4;
+	@FXML
+	private Label label_pinb_5;
+	@FXML
+	private Label label_pinb_6;
+	@FXML
+	private Label label_pinb_7;
 	
 	
 	
@@ -414,5 +485,160 @@ public class SingleLayoutController {
 		label_pclath.setText("0x" + Integer.toHexString(BefehlDecoder.speicherZellen[10]).toUpperCase());
 		label_fsr.setText("0x" + Integer.toHexString(BefehlDecoder.speicherZellen[4]).toUpperCase());
 		label_programcounter.setText("0x" + Integer.toHexString(programcounter).toUpperCase());
+	}
+	
+	//OnClick fuer Pins von PortA
+	@FXML
+	public void onClickPinA0()
+	{
+		if(label_pina_0.getText().equals("0"))
+			label_pina_0.setText("1");
+		else
+			label_pina_0.setText("0");
+		writePort(PORT_A);
+	}
+	@FXML
+	public void onClickPinA1()
+	{
+		if(label_pina_1.getText().equals("0"))
+			label_pina_1.setText("1");
+		else
+			label_pina_1.setText("0");
+		writePort(PORT_A);
+	}
+	@FXML
+	public void onClickPinA2()
+	{
+		if(label_pina_2.getText().equals("0"))
+			label_pina_2.setText("1");
+		else
+			label_pina_2.setText("0");
+		writePort(PORT_A);
+	}
+	@FXML
+	public void onClickPinA3()
+	{
+		if(label_pina_3.getText().equals("0"))
+			label_pina_3.setText("1");
+		else
+			label_pina_3.setText("0");
+		writePort(PORT_A);
+	}
+	@FXML
+	public void onClickPinA4()
+	{
+		if(label_pina_4.getText().equals("0"))
+			label_pina_4.setText("1");
+		else
+			label_pina_4.setText("0");
+		writePort(PORT_A);
+	}
+	@FXML
+	public void onClickPinA5()
+	{
+		if(label_pina_5.getText().equals("0"))
+			label_pina_5.setText("1");
+		else
+			label_pina_5.setText("0");
+		writePort(PORT_A);
+	}
+	@FXML
+	public void onClickPinA6()
+	{
+		if(label_pina_6.getText().equals("0"))
+			label_pina_6.setText("1");
+		else
+			label_pina_6.setText("0");
+		writePort(PORT_A);
+	}
+	@FXML
+	public void onClickPinA7()
+	{
+		if(label_pina_7.getText().equals("0"))
+			label_pina_7.setText("1");
+		else
+			label_pina_7.setText("0");
+		writePort(PORT_A);
+	}
+	
+	//OnClick fuer Pins von PortB
+		@FXML
+		public void onClickPinB0()
+		{
+			if(label_pinb_0.getText().equals("0"))
+				label_pinb_0.setText("1");
+			else
+				label_pinb_0.setText("0");
+			writePort(PORT_B);
+		}
+		@FXML
+		public void onClickPinB1()
+		{
+			if(label_pinb_1.getText().equals("0"))
+				label_pinb_1.setText("1");
+			else
+				label_pinb_1.setText("0");
+			writePort(PORT_B);
+		}
+		@FXML
+		public void onClickPinB2()
+		{
+			if(label_pinb_2.getText().equals("0"))
+				label_pinb_2.setText("1");
+			else
+				label_pinb_2.setText("0");
+			writePort(PORT_A);
+		}
+		@FXML
+		public void onClickPinB3()
+		{
+			if(label_pinb_3.getText().equals("0"))
+				label_pinb_3.setText("1");
+			else
+				label_pinb_3.setText("0");
+			writePort(PORT_B);
+		}
+		@FXML
+		public void onClickPinB4()
+		{
+			if(label_pinb_4.getText().equals("0"))
+				label_pinb_4.setText("1");
+			else
+				label_pinb_4.setText("0");
+			writePort(PORT_B);
+		}
+		@FXML
+		public void onClickPinB5()
+		{
+			if(label_pinb_5.getText().equals("0"))
+				label_pinb_5.setText("1");
+			else
+				label_pinb_5.setText("0");
+			writePort(PORT_B);
+		}
+		@FXML
+		public void onClickPinB6()
+		{
+			if(label_pinb_6.getText().equals("0"))
+				label_pinb_6.setText("1");
+			else
+				label_pinb_6.setText("0");
+			writePort(PORT_B);
+		}
+		@FXML
+		public void onClickPinB7()
+		{
+			if(label_pinb_7.getText().equals("0"))
+				label_pinb_7.setText("1");
+			else
+				label_pinb_7.setText("0");
+			writePort(PORT_B);
+		}
+	
+	
+	
+	
+	private void writePort(short adresse){
+		short portWert = 0;
 	}
 }
