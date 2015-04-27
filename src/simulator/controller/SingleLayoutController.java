@@ -10,12 +10,13 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import simulator.BefehlDecoder;
+import simulator.PortA;
+import simulator.PortB;
 import simulator.ValueClass;
 import simulator.ValueClassSpeicher;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -30,8 +31,6 @@ import javafx.stage.Stage;
 
 public class SingleLayoutController {
 
-	private static final short PORT_A = 5;
-	private static final short PORT_B = 6;
 	private ObservableList<ValueClass> data = FXCollections.observableArrayList();
 	private ObservableList<ValueClassSpeicher> data_speicher = FXCollections.observableArrayList();
 	public static int programcounter = 0;
@@ -495,7 +494,7 @@ public class SingleLayoutController {
 			label_pina_0.setText("1");
 		else
 			label_pina_0.setText("0");
-		writePort(PORT_A);
+		PortA.setPin(0);
 	}
 	@FXML
 	public void onClickPinA1()
@@ -504,7 +503,7 @@ public class SingleLayoutController {
 			label_pina_1.setText("1");
 		else
 			label_pina_1.setText("0");
-		writePort(PORT_A);
+		PortA.setPin(1);
 	}
 	@FXML
 	public void onClickPinA2()
@@ -513,7 +512,7 @@ public class SingleLayoutController {
 			label_pina_2.setText("1");
 		else
 			label_pina_2.setText("0");
-		writePort(PORT_A);
+		PortA.setPin(2);
 	}
 	@FXML
 	public void onClickPinA3()
@@ -522,7 +521,7 @@ public class SingleLayoutController {
 			label_pina_3.setText("1");
 		else
 			label_pina_3.setText("0");
-		writePort(PORT_A);
+		PortA.setPin(3);
 	}
 	@FXML
 	public void onClickPinA4()
@@ -531,7 +530,7 @@ public class SingleLayoutController {
 			label_pina_4.setText("1");
 		else
 			label_pina_4.setText("0");
-		writePort(PORT_A);
+		PortA.setPin(4);
 	}
 	@FXML
 	public void onClickPinA5()
@@ -540,7 +539,7 @@ public class SingleLayoutController {
 			label_pina_5.setText("1");
 		else
 			label_pina_5.setText("0");
-		writePort(PORT_A);
+		PortA.setPin(5);
 	}
 	@FXML
 	public void onClickPinA6()
@@ -549,7 +548,7 @@ public class SingleLayoutController {
 			label_pina_6.setText("1");
 		else
 			label_pina_6.setText("0");
-		writePort(PORT_A);
+		PortA.setPin(6);
 	}
 	@FXML
 	public void onClickPinA7()
@@ -558,7 +557,7 @@ public class SingleLayoutController {
 			label_pina_7.setText("1");
 		else
 			label_pina_7.setText("0");
-		writePort(PORT_A);
+		PortA.setPin(7);
 	}
 	
 	//OnClick fuer Pins von PortB
@@ -569,7 +568,7 @@ public class SingleLayoutController {
 				label_pinb_0.setText("1");
 			else
 				label_pinb_0.setText("0");
-			writePort(PORT_B);
+			PortB.setPin(0);
 		}
 		@FXML
 		public void onClickPinB1()
@@ -578,7 +577,7 @@ public class SingleLayoutController {
 				label_pinb_1.setText("1");
 			else
 				label_pinb_1.setText("0");
-			writePort(PORT_B);
+			PortB.setPin(1);
 		}
 		@FXML
 		public void onClickPinB2()
@@ -587,7 +586,7 @@ public class SingleLayoutController {
 				label_pinb_2.setText("1");
 			else
 				label_pinb_2.setText("0");
-			writePort(PORT_A);
+			PortB.setPin(2);
 		}
 		@FXML
 		public void onClickPinB3()
@@ -596,7 +595,7 @@ public class SingleLayoutController {
 				label_pinb_3.setText("1");
 			else
 				label_pinb_3.setText("0");
-			writePort(PORT_B);
+			PortB.setPin(3);
 		}
 		@FXML
 		public void onClickPinB4()
@@ -605,7 +604,7 @@ public class SingleLayoutController {
 				label_pinb_4.setText("1");
 			else
 				label_pinb_4.setText("0");
-			writePort(PORT_B);
+			PortB.setPin(4);
 		}
 		@FXML
 		public void onClickPinB5()
@@ -614,7 +613,7 @@ public class SingleLayoutController {
 				label_pinb_5.setText("1");
 			else
 				label_pinb_5.setText("0");
-			writePort(PORT_B);
+			PortB.setPin(5);
 		}
 		@FXML
 		public void onClickPinB6()
@@ -623,7 +622,7 @@ public class SingleLayoutController {
 				label_pinb_6.setText("1");
 			else
 				label_pinb_6.setText("0");
-			writePort(PORT_B);
+			PortB.setPin(6);
 		}
 		@FXML
 		public void onClickPinB7()
@@ -632,13 +631,6 @@ public class SingleLayoutController {
 				label_pinb_7.setText("1");
 			else
 				label_pinb_7.setText("0");
-			writePort(PORT_B);
+			PortB.setPin(7);
 		}
-	
-	
-	
-	
-	private void writePort(short adresse){
-		short portWert = 0;
-	}
 }
