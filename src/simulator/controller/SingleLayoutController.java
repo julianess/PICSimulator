@@ -16,12 +16,14 @@ import simulator.SyncRegister;
 import simulator.ValueClass;
 import simulator.ValueClassSpeicher;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
@@ -161,6 +163,7 @@ public class SingleLayoutController {
 	
 	
 	// Spalten erzeugen
+	TableColumn<ValueClass, String> table_checkbox = new TableColumn<ValueClass, String>("");
 	TableColumn<ValueClass, String> table_pcl = new TableColumn<ValueClass, String>("PCL");
 	TableColumn<ValueClass, String> table_code = new TableColumn<ValueClass, String>("Code");
 	TableColumn<ValueClass, String> table_zusatz = new TableColumn<ValueClass, String>("Zusatz");
@@ -190,7 +193,13 @@ public class SingleLayoutController {
 		fileChooser.setTitle("Choose a File");
 		Path file = Paths.get(fileChooser.showOpenDialog(primaryStage)
 				.getPath());
-
+		
+		
+		table_checkbox.setCellValueFactory(new PropertyValueFactory<ValueClass, String>("text_checkbox"));
+		table_checkbox.setEditable(false);
+		table_checkbox.setSortable(false);
+		table_checkbox.setMinWidth(30);
+		table_checkbox.setMaxWidth(30);
 		table_pcl.setCellValueFactory(new PropertyValueFactory<ValueClass, String>("text_pcl"));
 		table_pcl.setEditable(false);
 		table_pcl.setSortable(false);
@@ -208,14 +217,16 @@ public class SingleLayoutController {
 		try {
 			List<String> lines = Files.readAllLines(file, charset);
 			for (String line : lines) {
-				data.add(new ValueClass(line.substring(0, 4).trim(), line
+				data.add(new ValueClass(new CheckBox(), line.substring(0, 4).trim(), line
 						.substring(5, 9).trim(), line.substring(10,
 						line.length()).trim()));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
 		table.setItems(data);
+		table.getColumns().add(table_checkbox);
 		table.getColumns().add(table_pcl);
 		table.getColumns().add(table_code);
 		table.getColumns().add(table_zusatz);
@@ -378,6 +389,12 @@ public class SingleLayoutController {
 								felderAktualisieren();
 							}
 						});
+						
+						//TODO: checkbox-abfrage hier machen! 
+						System.out.println(data.get(i).getText_checkbox().selectedProperty().get());
+						if (false) {
+							pause = true;
+						}
 						
 						if(pause){
 							synchronized (t) {
