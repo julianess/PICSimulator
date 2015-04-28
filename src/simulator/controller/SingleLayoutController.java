@@ -12,6 +12,7 @@ import java.util.List;
 import simulator.BefehlDecoder;
 import simulator.PortA;
 import simulator.PortB;
+import simulator.SyncRegister;
 import simulator.ValueClass;
 import simulator.ValueClassSpeicher;
 import javafx.application.Platform;
@@ -368,6 +369,7 @@ public class SingleLayoutController {
 					System.out.println("Max. PCL: " + max_pcl + "\n\n");
 					for (int i = 0; i <= max_pcl; i = programcounter)
 					{
+						SyncRegister.synchronisieren();
 						//Register eintrage aktualisieren
 						Platform.runLater(new Runnable() {
 							
