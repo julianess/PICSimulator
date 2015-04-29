@@ -217,7 +217,7 @@ public class SingleLayoutController {
 		try {
 			List<String> lines = Files.readAllLines(file, charset);
 			for (String line : lines) {
-				data.add(new ValueClass(new CheckBox(), line.substring(0, 4).trim(), line
+				data.add(new ValueClass(line.substring(0, 4).trim(), line
 						.substring(5, 9).trim(), line.substring(10,
 						line.length()).trim()));
 			}
@@ -273,7 +273,10 @@ public class SingleLayoutController {
 					@Override
 					public void run() {
 						updateUiTable(row);
-						
+						//Breakpoint Abfrage
+						if (data.get(row).getText_checkbox().selectedProperty().get()) {
+							pause = true;
+						}
 					}
 				});
 				
@@ -363,6 +366,7 @@ public class SingleLayoutController {
 	// Tabelle von oben bis unten abarbeiten
 	public void startRunningThread() {
 		BefehlDecoder decoder = new BefehlDecoder();
+		pause = false;
 		
 		if (t == null) {
 
@@ -389,12 +393,6 @@ public class SingleLayoutController {
 								felderAktualisieren();
 							}
 						});
-						
-						//TODO: checkbox-abfrage hier machen! 
-						System.out.println(data.get(i).getText_checkbox().selectedProperty().get());
-						if (false) {
-							pause = true;
-						}
 						
 						if(pause){
 							synchronized (t) {
@@ -449,6 +447,7 @@ public class SingleLayoutController {
 			t.stop();
 			t = null;
 			programcounter = 0;
+			pause = false;
 		}
 		else {
 			Alert alert = new Alert(AlertType.ERROR);

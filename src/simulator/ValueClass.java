@@ -1,6 +1,5 @@
 package simulator;
 
-import javafx.beans.value.ChangeListener;
 import javafx.scene.control.CheckBox;
 
 public class ValueClass {
@@ -11,9 +10,9 @@ public class ValueClass {
 	private String text_zusatz;
 	
 	
-	public ValueClass(CheckBox checkBox, String text_pcl, String text_code, String text_zusatz)
+	public ValueClass(String text_pcl, String text_code, String text_zusatz)
 	{
-		this.text_checkbox = checkBox;
+		this.text_checkbox = new CheckBox();
 		this.text_pcl = text_pcl;
 		this.text_code = text_code;
 		this.text_zusatz = text_zusatz;
@@ -35,7 +34,7 @@ public class ValueClass {
 	public CheckBox getText_checkbox(){
 		return text_checkbox;
 	}
-
+	
 	@Override
 	public String toString() {
 		return "ValueClass [text_pcl=" + text_pcl + ", text_code=" + text_code
