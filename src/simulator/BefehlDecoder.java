@@ -515,6 +515,7 @@ public class BefehlDecoder
 		short f = maskiereAdresse(befehlcode2); //(short) (befehlcode2 & 127);
 		
 		short ergebnisRRF = (short) (speicherZellen[f] >> 1);
+		
 		short tmpCarry = 0; //temporaere Variable fuer CarryBit
 		
 		//Auf Ueberlauf pruefen (LB)
@@ -529,6 +530,9 @@ public class BefehlDecoder
 		if(StatusRegister.statusCarryBit()){
 			ergebnisRRF += 128;
 		}
+		
+		//Ergebnis auf 8 Bit beschraenken: mit 255 verunden
+		ergebnisRRF = (short) (ergebnisRRF & 255);
 		
 		//Wenn d == 0, Ergebnis in wRegister, sonst in f
 		if(d == 0){
@@ -569,6 +573,9 @@ public class BefehlDecoder
 		if(StatusRegister.statusCarryBit()){
 			ergebnisRLF += 1;
 		}
+		
+		//Ergebnis auf 8 Bit beschraenken: mit 255 verunden
+		ergebnisRLF = (short) (ergebnisRLF & 255);
 		
 		//Wenn d == 0, Ergebnis in wRegister, sonst in f
 		if(d == 0){
@@ -869,5 +876,4 @@ public class BefehlDecoder
 		}
 		return adresse;
 	}
-	
 }

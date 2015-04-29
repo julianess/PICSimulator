@@ -15,9 +15,8 @@ public class PortA {
 	}
 	
 	public static void setPortA(){
-		short test = BefehlDecoder.speicherZellen[3];
 		for (int i = 0; i < portA.length; i++){
-			if((test & (short) Math.pow(2, i)) != 0){
+			if((BefehlDecoder.speicherZellen[5] & (short) Math.pow(2, i)) != 0){
 				portA[i] = true;
 			}
 			else{

@@ -1,5 +1,6 @@
 package simulator;
 
+
 public class PortB {
 	public static boolean [] portB = new boolean[8];
 	
@@ -15,9 +16,8 @@ public class PortB {
 	}
 	
 	public static void setPortB(){
-		short test = BefehlDecoder.speicherZellen[3];
 		for (int i = 0; i < portB.length; i++){
-			if((test & (short) Math.pow(2, i)) != 0){
+			if((BefehlDecoder.speicherZellen[6] & (short) Math.pow(2, i)) != 0){
 				portB[i] = true;
 			}
 			else{
@@ -35,6 +35,6 @@ public class PortB {
 		}
 		
 		BefehlDecoder.speicherZellen[0x6] = portBToInt();
+		
 	}
-	
 }

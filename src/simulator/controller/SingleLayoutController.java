@@ -12,6 +12,7 @@ import java.util.List;
 import simulator.BefehlDecoder;
 import simulator.PortA;
 import simulator.PortB;
+import simulator.StatusRegister;
 import simulator.SyncRegister;
 import simulator.ValueClass;
 import simulator.ValueClassSpeicher;
@@ -39,6 +40,8 @@ public class SingleLayoutController {
 	public static int [] tos = new int [8];
 	public static short tos_counter = 0;
 	public static boolean pause = false;
+	public static boolean schritt = false;
+	private boolean ersterStart = true;
 
 	
 	public static void writeCounter()
@@ -76,6 +79,8 @@ public class SingleLayoutController {
 	private Button button_stop;
 	@FXML
 	private Button button_pause;
+	@FXML
+	private Button button_schritt;
 	@FXML
 	private Label label_wRegister;
 	@FXML
@@ -192,45 +197,69 @@ public class SingleLayoutController {
 		Path file = Paths.get(fileChooser.showOpenDialog(primaryStage)
 				.getPath());
 		
-		
-		table_checkbox.setCellValueFactory(new PropertyValueFactory<ValueClass, String>("text_checkbox"));
-		table_checkbox.setEditable(false);
-		table_checkbox.setSortable(false);
-		table_checkbox.setMinWidth(25);
-		table_checkbox.setMaxWidth(25);
-		table_pcl.setCellValueFactory(new PropertyValueFactory<ValueClass, String>("text_pcl"));
-		table_pcl.setEditable(false);
-		table_pcl.setSortable(false);
-		table_pcl.setMinWidth(40);
-		table_pcl.setMaxWidth(40);
-		table_code.setCellValueFactory(new PropertyValueFactory<ValueClass, String>("text_code"));
-		table_code.setEditable(false);
-		table_code.setSortable(false);
-		table_code.setMinWidth(40);
-		table_code.setMaxWidth(40);
-		table_zusatz.setCellValueFactory(new PropertyValueFactory<ValueClass, String>("text_zusatz"));
-		table_zusatz.setEditable(false);
-		table_zusatz.setSortable(false);
-
-		try {
-			List<String> lines = Files.readAllLines(file, charset);
-			for (String line : lines) {
-				data.add(new ValueClass(line.substring(0, 4).trim(), line
-						.substring(5, 9).trim(), line.substring(10,
-						line.length()).trim()));
+		if(ersterStart){
+			
+			table_checkbox.setCellValueFactory(new PropertyValueFactory<ValueClass, String>("text_checkbox"));
+			table_checkbox.setEditable(false);
+			table_checkbox.setSortable(false);
+			table_checkbox.setMinWidth(25);
+			table_checkbox.setMaxWidth(25);
+			table_pcl.setCellValueFactory(new PropertyValueFactory<ValueClass, String>("text_pcl"));
+			table_pcl.setEditable(false);
+			table_pcl.setSortable(false);
+			table_pcl.setMinWidth(40);
+			table_pcl.setMaxWidth(40);
+			table_code.setCellValueFactory(new PropertyValueFactory<ValueClass, String>("text_code"));
+			table_code.setEditable(false);
+			table_code.setSortable(false);
+			table_code.setMinWidth(40);
+			table_code.setMaxWidth(40);
+			table_zusatz.setCellValueFactory(new PropertyValueFactory<ValueClass, String>("text_zusatz"));
+			table_zusatz.setEditable(false);
+			table_zusatz.setSortable(false);
+	
+			try {
+				List<String> lines = Files.readAllLines(file, charset);
+				for (String line : lines) {
+					data.add(new ValueClass(line.substring(0, 4).trim(), line
+							.substring(5, 9).trim(), line.substring(10,
+							line.length()).trim()));
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
+			
+			table.setItems(data);
+			table.getColumns().add(table_checkbox);
+			table.getColumns().add(table_pcl);
+			table.getColumns().add(table_code);
+			table.getColumns().add(table_zusatz);
+			
+			// Speichertabelle in Tab Sonstiges anlegen
+			erzeugeSpeicher();
+			
+			ersterStart = false;
 		}
-		
-		table.setItems(data);
-		table.getColumns().add(table_checkbox);
-		table.getColumns().add(table_pcl);
-		table.getColumns().add(table_code);
-		table.getColumns().add(table_zusatz);
-
-		// Speichertabelle in Tab Sonstiges anlegen
-		erzeugeSpeicher();
+		else{
+			
+			data.clear();
+			
+			try {
+				List<String> lines = Files.readAllLines(file, charset);
+				for (String line : lines) {
+					data.add(new ValueClass(line.substring(0, 4).trim(), line
+							.substring(5, 9).trim(), line.substring(10,
+							line.length()).trim()));
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			//Speichertabelle aktualisieren
+			aktualisiereSpeicherView();
+		}
+		//Power-On-Reset durchfuehren
+		powerOnReset();
 	}
 
 	// Dokumentation oeffnen
@@ -291,57 +320,57 @@ public class SingleLayoutController {
 		table_zahl.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_zahl"));
 		table_zahl.setEditable(true);
 		table_zahl.setSortable(false);
-		table_zahl.setStyle("-fx-background-color:gray");
+		table_zahl.setStyle("-fx-background-color:#E2E2E2; -fx-border-color:#EDEDED; -fx-border-style: solid; -fx-border-width:0.5px");
 		table_zahl.setMinWidth(25);
 		table_zahl.setMaxWidth(25);
 
 		table_00.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_00"));
 		table_00.setEditable(true);
 		table_00.setSortable(false);
-		table_00.setMinWidth(27);
-		table_00.setMaxWidth(27);
+		table_00.setMinWidth(26);
+		table_00.setMaxWidth(26);
 
 		table_01.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_01"));
 		table_01.setEditable(true);
 		table_01.setSortable(false);
-		table_01.setMinWidth(27);
-		table_01.setMaxWidth(27);
+		table_01.setMinWidth(26);
+		table_01.setMaxWidth(26);
 
 		table_02.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_02"));
 		table_02.setEditable(true);
 		table_02.setSortable(false);
-		table_02.setMinWidth(27);
-		table_02.setMaxWidth(27);
+		table_02.setMinWidth(26);
+		table_02.setMaxWidth(26);
 
 		table_03.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_03"));
 		table_03.setEditable(true);
 		table_03.setSortable(false);
-		table_03.setMinWidth(27);
-		table_03.setMaxWidth(27);
+		table_03.setMinWidth(26);
+		table_03.setMaxWidth(26);
 
 		table_04.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_04"));
 		table_04.setEditable(true);
 		table_04.setSortable(false);
-		table_04.setMinWidth(27);
-		table_04.setMaxWidth(27);
+		table_04.setMinWidth(26);
+		table_04.setMaxWidth(26);
 
 		table_05.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_05"));
 		table_05.setEditable(true);
 		table_05.setSortable(false);
-		table_05.setMinWidth(27);
-		table_05.setMaxWidth(27);
+		table_05.setMinWidth(26);
+		table_05.setMaxWidth(26);
 
 		table_06.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_06"));
 		table_06.setEditable(true);
 		table_06.setSortable(false);
-		table_06.setMinWidth(27);
-		table_06.setMaxWidth(27);
+		table_06.setMinWidth(26);
+		table_06.setMaxWidth(26);
 
 		table_07.setCellValueFactory(new PropertyValueFactory<ValueClassSpeicher, String>("text_07"));
 		table_07.setEditable(true);
 		table_07.setSortable(false);
-		table_07.setMinWidth(27);
-		table_07.setMaxWidth(27);
+		table_07.setMinWidth(26);
+		table_07.setMaxWidth(26);
 
 		for (int i = 0; i <= 31; i++) {
 			
@@ -404,7 +433,6 @@ public class SingleLayoutController {
 								aktualisiereSpeicherView();	
 							}
 						});
-						
 						if(pause){
 							synchronized (t) {
 								try {
@@ -413,6 +441,10 @@ public class SingleLayoutController {
 									e.printStackTrace();
 								}
 							}
+						}
+						if(schritt){
+							schritt = false;
+							pause = true;
 						}
 						
 						short test = getLine();
@@ -502,7 +534,6 @@ public class SingleLayoutController {
 				pause = true;
 				button_pause.setText("Resume");
 			}
-			System.out.println(pause);
 		}
 	}
 
@@ -515,6 +546,7 @@ public class SingleLayoutController {
 		label_pclath.setText("0x" + Integer.toHexString(BefehlDecoder.speicherZellen[10]).toUpperCase());
 		label_fsr.setText("0x" + Integer.toHexString(BefehlDecoder.speicherZellen[4]).toUpperCase());
 		label_programcounter.setText("0x" + Integer.toHexString(programcounter).toUpperCase());
+		label_status.setText("0x" + Integer.toHexString(BefehlDecoder.speicherZellen[3]).toUpperCase());
 	}
 	
 	//OnClick fuer Pins von PortA
@@ -526,6 +558,7 @@ public class SingleLayoutController {
 		else
 			label_pina_0.setText("0");
 		PortA.setPin(0);
+		aktualisiereSpeicherView();
 	}
 	@FXML
 	public void onClickPinA1()
@@ -535,6 +568,7 @@ public class SingleLayoutController {
 		else
 			label_pina_1.setText("0");
 		PortA.setPin(1);
+		aktualisiereSpeicherView();
 	}
 	@FXML
 	public void onClickPinA2()
@@ -544,6 +578,7 @@ public class SingleLayoutController {
 		else
 			label_pina_2.setText("0");
 		PortA.setPin(2);
+		aktualisiereSpeicherView();
 	}
 	@FXML
 	public void onClickPinA3()
@@ -553,6 +588,7 @@ public class SingleLayoutController {
 		else
 			label_pina_3.setText("0");
 		PortA.setPin(3);
+		aktualisiereSpeicherView();
 	}
 	@FXML
 	public void onClickPinA4()
@@ -562,6 +598,7 @@ public class SingleLayoutController {
 		else
 			label_pina_4.setText("0");
 		PortA.setPin(4);
+		aktualisiereSpeicherView();
 	}
 	@FXML
 	public void onClickPinA5()
@@ -571,6 +608,7 @@ public class SingleLayoutController {
 		else
 			label_pina_5.setText("0");
 		PortA.setPin(5);
+		aktualisiereSpeicherView();
 	}
 	@FXML
 	public void onClickPinA6()
@@ -580,6 +618,7 @@ public class SingleLayoutController {
 		else
 			label_pina_6.setText("0");
 		PortA.setPin(6);
+		aktualisiereSpeicherView();
 	}
 	@FXML
 	public void onClickPinA7()
@@ -589,6 +628,7 @@ public class SingleLayoutController {
 		else
 			label_pina_7.setText("0");
 		PortA.setPin(7);
+		aktualisiereSpeicherView();
 	}
 	
 	//OnClick fuer Pins von PortB
@@ -600,6 +640,7 @@ public class SingleLayoutController {
 		else
 			label_pinb_0.setText("0");
 		PortB.setPin(0);
+		aktualisiereSpeicherView();
 	}
 	@FXML
 	public void onClickPinB1()
@@ -609,6 +650,7 @@ public class SingleLayoutController {
 		else
 			label_pinb_1.setText("0");
 		PortB.setPin(1);
+		aktualisiereSpeicherView();
 	}
 	@FXML
 	public void onClickPinB2()
@@ -618,6 +660,7 @@ public class SingleLayoutController {
 		else
 			label_pinb_2.setText("0");
 		PortB.setPin(2);
+		aktualisiereSpeicherView();
 	}
 	@FXML
 	public void onClickPinB3()
@@ -627,6 +670,7 @@ public class SingleLayoutController {
 		else
 			label_pinb_3.setText("0");
 		PortB.setPin(3);
+		aktualisiereSpeicherView();
 	}
 	@FXML
 	public void onClickPinB4()
@@ -636,6 +680,7 @@ public class SingleLayoutController {
 		else
 			label_pinb_4.setText("0");
 		PortB.setPin(4);
+		aktualisiereSpeicherView();
 	}
 	@FXML
 	public void onClickPinB5()
@@ -645,6 +690,7 @@ public class SingleLayoutController {
 		else
 			label_pinb_5.setText("0");
 		PortB.setPin(5);
+		aktualisiereSpeicherView();
 	}
 	@FXML
 	public void onClickPinB6()
@@ -654,6 +700,7 @@ public class SingleLayoutController {
 		else
 			label_pinb_6.setText("0");
 		PortB.setPin(6);
+		aktualisiereSpeicherView();
 	}
 	@FXML
 	public void onClickPinB7()
@@ -663,6 +710,7 @@ public class SingleLayoutController {
 		else
 			label_pinb_7.setText("0");
 		PortB.setPin(7);
+		aktualisiereSpeicherView();
 	}
 	
 	private void aktualisiereSpeicherView(){
@@ -693,15 +741,92 @@ public class SingleLayoutController {
 				speicherByte[5],
 				speicherByte[6],
 				speicherByte[7]
-//				Integer.toHexString(BefehlDecoder.speicherZellen[(8*i)+0]).toUpperCase(), 
-//				Integer.toHexString(BefehlDecoder.speicherZellen[(8*i)+1]).toUpperCase(),
-//				Integer.toHexString(BefehlDecoder.speicherZellen[(8*i)+2]).toUpperCase(), 
-//				Integer.toHexString(BefehlDecoder.speicherZellen[(8*i)+3]).toUpperCase(), 
-//				Integer.toHexString(BefehlDecoder.speicherZellen[(8*i)+4]).toUpperCase(), 
-//				Integer.toHexString(BefehlDecoder.speicherZellen[(8*i)+5]).toUpperCase(), 
-//				Integer.toHexString(BefehlDecoder.speicherZellen[(8*i)+6]).toUpperCase(),
-//				Integer.toHexString(BefehlDecoder.speicherZellen[(8*i)+7]).toUpperCase()
 			));
+		}
+		PortA.setPortA();
+		PortB.setPortB();
+	}
+	
+	private void powerOnReset(){
+		programcounter = 0;
+		
+		//Spezielle Register nach Schema: Bank0 = Bank1 = Wert
+		
+		//Adr 0 - kein physikalisches Register - als 0
+		BefehlDecoder.speicherZellen[0] = BefehlDecoder.speicherZellen[128] = 0;
+		//TMR0 unknown, NUR AUF BANK 0!
+		BefehlDecoder.speicherZellen[1] = (short) (BefehlDecoder.speicherZellen[1] & 255);
+		//OPTION_REG, NUR AUF BANK 1!
+		BefehlDecoder.speicherZellen[129] = 255;
+		//PCL
+		BefehlDecoder.speicherZellen[2] = 0;
+		BefehlDecoder.speicherZellen[130] = 0;
+		//STATUS
+		BefehlDecoder.speicherZellen[3] = (short) (BefehlDecoder.speicherZellen[3] | 24);
+		BefehlDecoder.speicherZellen[131] = (short) (BefehlDecoder.speicherZellen[131] | 24);;
+		//FSR unknown
+		BefehlDecoder.speicherZellen[4] = (short) (BefehlDecoder.speicherZellen[4] & 255);
+		BefehlDecoder.speicherZellen[132] = (short) (BefehlDecoder.speicherZellen[132] & 255);
+		//PortA, NUR AUF BANK 0!
+		BefehlDecoder.speicherZellen[5] = (short) (BefehlDecoder.speicherZellen[5] & 31);
+		//TrisA, NUR AUF BANK 1!
+		BefehlDecoder.speicherZellen[133] = 31;
+		//PortB unknown, NUR AUF BANK 0!
+		BefehlDecoder.speicherZellen[6] = (short) (BefehlDecoder.speicherZellen[6] & 255);
+		//TrisB, NUR AUF BANK 1!
+		BefehlDecoder.speicherZellen[134] = 255;
+		//Unimplemented Adr 0x7 und Adr 0x87 als 0
+		BefehlDecoder.speicherZellen[7] = 0;
+		BefehlDecoder.speicherZellen[135] = 0;
+		//EEDATA unknown, NUR AUF BANK 0!
+		BefehlDecoder.speicherZellen[8] = (short) (BefehlDecoder.speicherZellen[7] & 255);
+		//EECON1, NUR AUF BANNK 1!
+		BefehlDecoder.speicherZellen[136] = (short) (BefehlDecoder.speicherZellen[136] & 8);
+		//EEADR unknown, NUR AUF BANK 0!
+		BefehlDecoder.speicherZellen[9] = (short) (BefehlDecoder.speicherZellen[8] & 255);
+		//EECON2, NUR AUF BANNK 1! kein physikalisches Register - als 0
+		BefehlDecoder.speicherZellen[137] = 0;
+		//PCLATH
+		BefehlDecoder.speicherZellen[10] = 0;
+		BefehlDecoder.speicherZellen[138] = 0;
+		//INTCON
+		BefehlDecoder.speicherZellen[11] = (short) (BefehlDecoder.speicherZellen[6] & 1);
+		BefehlDecoder.speicherZellen[139] = (short) (BefehlDecoder.speicherZellen[139] & 1);
+	
+		aktualisiereSpeicherView();
+		StatusRegister.speicherInStatus();
+		felderAktualisieren();
+	}
+	
+	@SuppressWarnings("static-access")
+	@FXML
+	public void onClickSchritt() {
+		Alert alert = new Alert(AlertType.ERROR);
+		String title = "Fehler beim Pausieren";
+		String header = "Programm konnte nicht angehalten werden";
+		String content = "";
+		
+		alert.setTitle(title);
+		alert.setHeaderText(header);
+		
+		if (t == null) {
+			content = "Das Programm wurde nicht gestartet.";
+			alert.setContentText(content);
+			alert.showAndWait();
+		}
+		else if (t.currentThread().getState() == Thread.State.TERMINATED) {
+			content = "Das Programm wurde bereits beendet.";
+			alert.setContentText(content);
+			alert.showAndWait();
+		}
+		else {
+			if(pause){
+				schritt = true;
+				pause = false;
+				synchronized (t) {
+					t.notify();
+				}
+			}
 		}
 	}
 }

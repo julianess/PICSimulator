@@ -3,8 +3,6 @@ package simulator;
 public class StatusRegister {
 	private static final short Z = 2;
 	private static final short BANK  = 5;
-	private static final short STATUS1 = 3;
-	private static final short STATUS2 =  131;
 	private static final short C = 0;
 	private static final short DC = 1;
 	
@@ -80,16 +78,16 @@ public class StatusRegister {
 	}
 	
 	public static void speicherInStatus(){
-		short test = 0;
+		short wert = 0;
 		if(statusBank()){
-			test = BefehlDecoder.speicherZellen[131];
+			wert = BefehlDecoder.speicherZellen[131];
 		}
 		else{
-			test = BefehlDecoder.speicherZellen[3];
+			wert = BefehlDecoder.speicherZellen[3];
 		}
 		
 		for (int i = 0; i < register.length; i++){
-			if((test & (short) Math.pow(2, i)) != 0){
+			if((wert & (short) Math.pow(2, i)) != 0){
 				register[i] = true;
 			}
 			else{
