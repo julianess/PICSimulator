@@ -11,10 +11,12 @@ import java.util.List;
 
 import simulator.BefehlDecoder;
 import simulator.Laufzeit;
+import simulator.OptionRegister;
 import simulator.PortA;
 import simulator.PortB;
 import simulator.StatusRegister;
 import simulator.SyncRegister;
+import simulator.Timer0;
 import simulator.ValueClass;
 import simulator.ValueClassSpeicher;
 import javafx.application.Platform;
@@ -847,8 +849,11 @@ public class SingleLayoutController {
 		BefehlDecoder.speicherZellen[11] = (short) (BefehlDecoder.speicherZellen[6] & 1);
 		BefehlDecoder.speicherZellen[139] = (short) (BefehlDecoder.speicherZellen[139] & 1);
 	
+		OptionRegister.speicherInOption();
 		StatusRegister.speicherInStatus();
+		Timer0.speicherInTimer();
 		Laufzeit.berechneLaufzeit();
+		
 		felderAktualisieren();
 		aktualisiereSpeicherView();
 	}
@@ -916,8 +921,7 @@ public class SingleLayoutController {
 			    "24.00000 MHz",
 			    "32.00000 MHz",
 			    "40.00000 MHz",
-			    "80.00000 MHz"
-			    )
+			    "80.00000 MHz")
 			);
 		choice_quarzfrequenz.getSelectionModel().selectFirst();
 	}
