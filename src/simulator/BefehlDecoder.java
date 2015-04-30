@@ -129,10 +129,12 @@ public class BefehlDecoder
 
 	private void nop() {
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void returnBefehl() {
-		SingleLayoutController.getCounter();	
+		SingleLayoutController.getCounter();
+		SingleLayoutController.taktzyklen += 2;
 	}
 
 	private void retfie() {
@@ -156,6 +158,7 @@ public class BefehlDecoder
 		StatusRegister.speicherInStatus();
 		
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void clrw(short befehlcode2) {
@@ -164,6 +167,7 @@ public class BefehlDecoder
 		StatusRegister.setZFlag(true);
 		
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void clrf(short befehlcode2) {
@@ -175,6 +179,7 @@ public class BefehlDecoder
 		StatusRegister.setZFlag(true);
 		
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void subwf(short befehlcode2) {
@@ -232,6 +237,7 @@ public class BefehlDecoder
 		}
 		
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void decf(short befehlcode2) {
@@ -262,6 +268,7 @@ public class BefehlDecoder
 		}
 		
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void iorwf(short befehlcode2) {
@@ -288,6 +295,7 @@ public class BefehlDecoder
 		}
 		
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void andwf(short befehlcode2) {
@@ -313,6 +321,7 @@ public class BefehlDecoder
 			StatusRegister.setZFlag(false);
 		}
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void xorwf(short befehlcode2) {
@@ -340,6 +349,7 @@ public class BefehlDecoder
 		}
 		
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void addwf(short befehlcode2) {
@@ -391,6 +401,7 @@ public class BefehlDecoder
 		}
 		
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void movf(short befehlcode2) {
@@ -417,6 +428,7 @@ public class BefehlDecoder
 		}
 		
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void comf(short befehlcode2) {
@@ -447,6 +459,7 @@ public class BefehlDecoder
 		}
 		
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void incf(short befehlcode2) {
@@ -475,6 +488,7 @@ public class BefehlDecoder
 		}
 		
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 		
 	}
 
@@ -508,6 +522,7 @@ public class BefehlDecoder
 		}
 		
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void rrf(short befehlcode2) {
@@ -552,6 +567,7 @@ public class BefehlDecoder
 		}
 		
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void rlf(short befehlcode2) {
@@ -595,6 +611,7 @@ public class BefehlDecoder
 		}
 		
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void swapf(short befehlcode2) {
@@ -620,6 +637,7 @@ public class BefehlDecoder
 		}
 		
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void incfsz(short befehlcode2) {
@@ -648,6 +666,7 @@ public class BefehlDecoder
 		}
 		
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void bcf(short befehlcode2) {
@@ -664,6 +683,7 @@ public class BefehlDecoder
 		StatusRegister.speicherInStatus();
 		
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void bsf(short befehlcode2) {
@@ -677,6 +697,7 @@ public class BefehlDecoder
 		StatusRegister.speicherInStatus();
 		
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void btfsc(short befehlcode2) {
@@ -688,6 +709,7 @@ public class BefehlDecoder
 		}
 		
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void btfss(short befehlcode2) {
@@ -700,12 +722,14 @@ public class BefehlDecoder
 		
 		StatusRegister.speicherInStatus();
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void call(short befehlcode2) {
 		short k = (short) (befehlcode2 & 255);
 		SingleLayoutController.writeCounter();
-		SingleLayoutController.programcounter = k;	
+		SingleLayoutController.programcounter = k;
+		SingleLayoutController.taktzyklen += 2;
 	}
 
 	private void gotoBefehl(short befehlcode2) {
@@ -713,17 +737,20 @@ public class BefehlDecoder
 		//Richtigen PC evtl noch implementieren
 		short k = (short) (befehlcode2 & 127);
 		SingleLayoutController.programcounter = k;
+		SingleLayoutController.taktzyklen += 2;
 	}
 
 	private void movlw(short befehlcode2) {
 		wRegister = (short) (befehlcode2 & 255);
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void retlw(short befehlcode2) {
 		short k = (short)(befehlcode2 & 255);
 		wRegister = k;
 		SingleLayoutController.getCounter();
+		SingleLayoutController.taktzyklen += 2;
 	}
 
 	private void iorlw(short befehlcode2) {
@@ -743,6 +770,7 @@ public class BefehlDecoder
 		}
 		
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void andlw(short befehlcode2) {
@@ -760,7 +788,7 @@ public class BefehlDecoder
 		}
 		
 		SingleLayoutController.programcounter ++;
-		
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void xorlw(short befehlcode2) {
@@ -778,6 +806,7 @@ public class BefehlDecoder
 		}
 		
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void sublw(short befehlcode2) {
@@ -822,6 +851,7 @@ public class BefehlDecoder
 		}
 		
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void addlw(short befehlcode2) {
@@ -860,6 +890,7 @@ public class BefehlDecoder
 		}
 		
 		SingleLayoutController.programcounter ++;
+		SingleLayoutController.taktzyklen ++;
 	}
 	
 	//f maskieren und auf 0 pruefen. Ggf. Adresse ueber FSR beziehen

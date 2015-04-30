@@ -36,6 +36,7 @@ public class SingleLayoutController {
 	private ObservableList<ValueClass> data = FXCollections.observableArrayList();
 	private ObservableList<ValueClassSpeicher> data_speicher = FXCollections.observableArrayList();
 	public static int programcounter = 0;
+	public static int taktzyklen = 0;
 	private int max_pcl = 0;
 	public static int [] tos = new int [8];
 	public static short tos_counter = 0;
@@ -93,6 +94,8 @@ public class SingleLayoutController {
 	private Label label_status;
 	@FXML
 	private Label label_programcounter;
+	@FXML
+	private Label label_taktzyklen;
 	
 	//RA0 Register mit TrisA
 	@FXML
@@ -547,6 +550,7 @@ public class SingleLayoutController {
 		label_fsr.setText("0x" + Integer.toHexString(BefehlDecoder.speicherZellen[4]).toUpperCase());
 		label_programcounter.setText("0x" + Integer.toHexString(programcounter).toUpperCase());
 		label_status.setText("0x" + Integer.toHexString(BefehlDecoder.speicherZellen[3]).toUpperCase());
+		label_taktzyklen.setText("0x" + Integer.toHexString(taktzyklen).toUpperCase());
 	}
 	
 	//OnClick fuer Pins von PortA
@@ -749,6 +753,7 @@ public class SingleLayoutController {
 	
 	private void powerOnReset(){
 		programcounter = 0;
+		taktzyklen = 0;
 		
 		//Spezielle Register nach Schema: Bank0 = Bank1 = Wert
 		
