@@ -7,10 +7,10 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.DecimalFormat;
 import java.util.List;
 
 import simulator.BefehlDecoder;
+import simulator.Laufzeit;
 import simulator.PortA;
 import simulator.PortB;
 import simulator.StatusRegister;
@@ -18,7 +18,6 @@ import simulator.SyncRegister;
 import simulator.ValueClass;
 import simulator.ValueClassSpeicher;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -46,8 +45,8 @@ public class SingleLayoutController {
 	public static boolean pause = false;
 	public static boolean schritt = false;
 	private boolean ersterStart = true;
-	private double quarzfrequenz = 0;
-	private double laufzeit = 0;
+//	private double quarzfrequenz = 0;
+//	private double laufzeit = 0;
 
 	
 	public static void writeCounter()
@@ -106,7 +105,7 @@ public class SingleLayoutController {
 	
 	@SuppressWarnings("rawtypes")
 	@FXML
-	private ChoiceBox choice_quarzfrequenz;
+	public ChoiceBox choice_quarzfrequenz;
 	
 	//RA0 Register mit TrisA
 	@FXML
@@ -298,7 +297,9 @@ public class SingleLayoutController {
 	}
 
 	public short getLine() {
-		String pclString;
+		String pclString; //String fuer den PCL
+		
+		//PCL String formatieren, sodass er immer 4-Stellig Hex angezeigt wird
 		if (programcounter < 16)
 			pclString = "000"
 					+ Integer.toHexString(programcounter).toUpperCase();
@@ -309,6 +310,8 @@ public class SingleLayoutController {
 			pclString = "0" + Integer.toHexString(programcounter).toUpperCase();
 		else
 			pclString = Integer.toHexString(programcounter).toUpperCase();
+		
+		
 		for (int i = 0; i <= table.getItems().size(); i++) {
 			if (table_pcl.getCellData(i).equals(pclString)) {
 				final int row = i;
@@ -331,6 +334,7 @@ public class SingleLayoutController {
 		return 0;
 	}
 
+	//SPeichertabelle erzeugen
 	public void erzeugeSpeicher() {
 		String zeileNummer;
 
@@ -389,6 +393,7 @@ public class SingleLayoutController {
 		table_07.setMinWidth(26);
 		table_07.setMaxWidth(26);
 
+		//Speichertabelle mit 00 initialisieren
 		for (int i = 0; i <= 31; i++) {
 			
 			if (i * 8 < 16)
@@ -427,17 +432,20 @@ public class SingleLayoutController {
 				@Override
 				public void run() {
 
+					//Maximalen PCL berechnen
 					for (int i = 0; i < table.getItems().size(); i++)
 					{
 						if (!table_pcl.getCellData(i).equals("")) {
 							 max_pcl = (short) Integer.parseInt(table_pcl.getCellData(i), 16);
 						}
 					}
-					System.out.println("Max. PCL: " + max_pcl + "\n\n");
+					
+					//Hauptschleife
 					for (int i = 0; i <= max_pcl; i = programcounter)
 					{
 						SyncRegister.synchronisieren();
 						
+						//Speichertabelle als Ansicht Aktualisieren
 						Platform.runLater(new Runnable() {
 							
 							@Override
@@ -446,14 +454,7 @@ public class SingleLayoutController {
 							}
 						});
 						
-						Platform.runLater(new Runnable() {
-							
-							@Override
-							public void run() {
-								berechneLaufzeit();
-							}
-						});
-						
+						//Felder in der GUI aktualisieren
 						Platform.runLater(new Runnable() {
 							
 							@Override
@@ -462,6 +463,7 @@ public class SingleLayoutController {
 							}
 						});
 
+						//Warten, wenn Pause aktiviert ist
 						if(pause){
 							synchronized (t) {
 								try {
@@ -471,10 +473,14 @@ public class SingleLayoutController {
 								}
 							}
 						}
+						
+						//Abfrage fuer Einzelschritte
 						if(schritt){
 							schritt = false;
 							pause = true;
 						}
+						
+						Laufzeit.taktzyklen_vorAufruf = taktzyklen; //Taktzyklen vor dem Aufruf speichern
 						
 						short test = getLine();
 						System.out.println("PCL: " + programcounter+ "  Code: " + test + "\n");
@@ -485,7 +491,13 @@ public class SingleLayoutController {
 							e.printStackTrace();
 						}
 						
+						Laufzeit.taktzyklen_nachAufruf = taktzyklen; //Taktzyklen nach dem Aufruf speichern
+						
+						//Laufzeit berechnen
+						Laufzeit.berechneLaufzeit();
 					}
+					
+					//Programmende
 					if(programcounter >= max_pcl)
 					{
 						t = null;
@@ -566,20 +578,26 @@ public class SingleLayoutController {
 		}
 	}
 
-	private void felderAktualisieren(){
+	public void felderAktualisieren(){
 		
 		BefehlDecoder.speicherZellen[0x2] = BefehlDecoder.speicherZellen[0x82] = (short) programcounter;
 		
+		//Label wRegister aktualisieren
 		label_wRegister.setText("0x" + Integer.toHexString(BefehlDecoder.wRegister).toUpperCase());
+		//Label PCL aktualisieren
 		label_pcl.setText("0x" + Integer.toHexString(BefehlDecoder.speicherZellen[2]).toUpperCase());
+		//Label PCLATH aktualisieren
 		label_pclath.setText("0x" + Integer.toHexString(BefehlDecoder.speicherZellen[10]).toUpperCase());
+		//Label FSR aktualisieren
 		label_fsr.setText("0x" + Integer.toHexString(BefehlDecoder.speicherZellen[4]).toUpperCase());
+		//Label Programmcounter aktualisieren
 		label_programcounter.setText("0x" + Integer.toHexString(programcounter).toUpperCase());
+		//Label Status aktualisieren
 		label_status.setText("0x" + Integer.toHexString(BefehlDecoder.speicherZellen[3]).toUpperCase());
+		//Label Taktzyklen aktualisieren
 		label_taktzyklen.setText("0x" + Integer.toHexString(taktzyklen).toUpperCase());
-		
-		DecimalFormat df_laufzeit = new DecimalFormat("#.####");
-		label_laufzeit.setText(df_laufzeit.format(laufzeit) + " s");
+		//Label Laufzeit aktualisieren
+		label_laufzeit.setText(Laufzeit.laufzeit_string);
 	}
 	
 	//OnClick fuer Pins von PortA
@@ -746,7 +764,8 @@ public class SingleLayoutController {
 		aktualisiereSpeicherView();
 	}
 	
-	private void aktualisiereSpeicherView(){
+	//Funktion fuer das Aktualisieren der Speichertabelle
+	public void aktualisiereSpeicherView(){
 		String zeileNummer;
 		data_speicher.clear();
 		
@@ -783,7 +802,7 @@ public class SingleLayoutController {
 	private void powerOnReset(){
 		programcounter = 0;
 		taktzyklen = 0;
-		laufzeit = 0;
+		Laufzeit.laufzeit = 0;
 		
 		//Spezielle Register nach Schema: Bank0 = Bank1 = Wert
 		
@@ -828,9 +847,10 @@ public class SingleLayoutController {
 		BefehlDecoder.speicherZellen[11] = (short) (BefehlDecoder.speicherZellen[6] & 1);
 		BefehlDecoder.speicherZellen[139] = (short) (BefehlDecoder.speicherZellen[139] & 1);
 	
-		aktualisiereSpeicherView();
 		StatusRegister.speicherInStatus();
+		Laufzeit.berechneLaufzeit();
 		felderAktualisieren();
+		aktualisiereSpeicherView();
 	}
 	
 	@SuppressWarnings("static-access")
@@ -865,6 +885,7 @@ public class SingleLayoutController {
 		}
 	}
 	
+	//Erzeugt die Auswahl der Frequenzen
 	@SuppressWarnings("unchecked")
 	public void erzeugeFrequenzChoice(){
 		choice_quarzfrequenz.setItems(FXCollections.observableArrayList(
@@ -903,12 +924,8 @@ public class SingleLayoutController {
 	
 	//Wird beim Start druecken aufgerufen
 	private void getQuarzFrequenz(){
-		quarzfrequenz = 0;
-		quarzfrequenz = Double.parseDouble(((String) (choice_quarzfrequenz.getValue())).substring(0, 8));
-		System.out.println(quarzfrequenz);
-	}
-	
-	private void berechneLaufzeit(){
-		laufzeit += (1/quarzfrequenz);
+		Laufzeit.einheit = ((String) choice_quarzfrequenz.getValue()).substring(9, 12);
+		System.out.println(Laufzeit.einheit);
+		Laufzeit.quarzfrequenz = Double.parseDouble(((String) (choice_quarzfrequenz.getValue())).substring(0, 8));
 	}
 }

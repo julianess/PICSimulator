@@ -733,7 +733,6 @@ public class BefehlDecoder
 	}
 
 	private void gotoBefehl(short befehlcode2) {
-
 		//Richtigen PC evtl noch implementieren
 		short k = (short) (befehlcode2 & 127);
 		SingleLayoutController.programcounter = k;

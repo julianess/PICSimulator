@@ -1,5 +1,6 @@
 package simulator;
 
+//Klasse fuer die Synchronisierung der "doppelt vorhandenen" Register
 public class SyncRegister {
 	private static final short FSR0 = 4;
 	private static final short FSR1 =  132;
