@@ -7,6 +7,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.util.List;
 
 import simulator.BefehlDecoder;
@@ -17,12 +18,14 @@ import simulator.SyncRegister;
 import simulator.ValueClass;
 import simulator.ValueClassSpeicher;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
@@ -43,6 +46,8 @@ public class SingleLayoutController {
 	public static boolean pause = false;
 	public static boolean schritt = false;
 	private boolean ersterStart = true;
+	private double quarzfrequenz = 0;
+	private double laufzeit = 0;
 
 	
 	public static void writeCounter()
@@ -96,6 +101,12 @@ public class SingleLayoutController {
 	private Label label_programcounter;
 	@FXML
 	private Label label_taktzyklen;
+	@FXML
+	private Label label_laufzeit;
+	
+	@SuppressWarnings("rawtypes")
+	@FXML
+	private ChoiceBox choice_quarzfrequenz;
 	
 	//RA0 Register mit TrisA
 	@FXML
@@ -240,6 +251,9 @@ public class SingleLayoutController {
 			
 			// Speichertabelle in Tab Sonstiges anlegen
 			erzeugeSpeicher();
+			
+			//choiceBox fuer Quarzfrequenz fuellen
+			erzeugeFrequenzChoice();
 			
 			ersterStart = false;
 		}
@@ -403,6 +417,9 @@ public class SingleLayoutController {
 		BefehlDecoder decoder = new BefehlDecoder();
 		pause = false;
 		
+		//Quarzfrequenz lesen
+		getQuarzFrequenz();
+		
 		if (t == null) {
 
 			// Task um die UI Funktionalität nicht zu blockieren
@@ -420,14 +437,6 @@ public class SingleLayoutController {
 					for (int i = 0; i <= max_pcl; i = programcounter)
 					{
 						SyncRegister.synchronisieren();
-						//Register eintrage aktualisieren
-						Platform.runLater(new Runnable() {
-							
-							@Override
-							public void run() {
-								felderAktualisieren();
-							}
-						});
 						
 						Platform.runLater(new Runnable() {
 							
@@ -436,6 +445,23 @@ public class SingleLayoutController {
 								aktualisiereSpeicherView();	
 							}
 						});
+						
+						Platform.runLater(new Runnable() {
+							
+							@Override
+							public void run() {
+								berechneLaufzeit();
+							}
+						});
+						
+						Platform.runLater(new Runnable() {
+							
+							@Override
+							public void run() {
+								felderAktualisieren();
+							}
+						});
+
 						if(pause){
 							synchronized (t) {
 								try {
@@ -551,6 +577,9 @@ public class SingleLayoutController {
 		label_programcounter.setText("0x" + Integer.toHexString(programcounter).toUpperCase());
 		label_status.setText("0x" + Integer.toHexString(BefehlDecoder.speicherZellen[3]).toUpperCase());
 		label_taktzyklen.setText("0x" + Integer.toHexString(taktzyklen).toUpperCase());
+		
+		DecimalFormat df_laufzeit = new DecimalFormat("#.####");
+		label_laufzeit.setText(df_laufzeit.format(laufzeit) + " s");
 	}
 	
 	//OnClick fuer Pins von PortA
@@ -754,6 +783,7 @@ public class SingleLayoutController {
 	private void powerOnReset(){
 		programcounter = 0;
 		taktzyklen = 0;
+		laufzeit = 0;
 		
 		//Spezielle Register nach Schema: Bank0 = Bank1 = Wert
 		
@@ -833,5 +863,52 @@ public class SingleLayoutController {
 				}
 			}
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void erzeugeFrequenzChoice(){
+		choice_quarzfrequenz.setItems(FXCollections.observableArrayList(
+			    "32.76800 kHz",
+			    "500.0000 kHz",
+			    "1.000000 MHz",
+			    "2.000000 MHz",
+			    "2.457600 MHz",
+			    "3.000000 MHz",
+			    "3.276800 MHz",
+			    "3.680000 MHz",
+			    "3.686411 MHz",
+			    "4.000000 MHz",
+			    "4.096000 MHz",
+			    "4.194304 MHz",
+			    "4.433619 MHz",
+			    "4.915200 MHz",
+			    "5.000000 MHz",
+			    "6.000000 MHz",
+			    "6.144000 MHz",
+			    "6.250000 MHz",
+			    "6.553600 MHz",
+			    "8.000000 MHz",
+			    "10.00000 MHz",
+			    "12.00000 MHz",
+			    "16.00000 MHz",
+			    "20.00000 MHz",
+			    "24.00000 MHz",
+			    "32.00000 MHz",
+			    "40.00000 MHz",
+			    "80.00000 MHz"
+			    )
+			);
+		choice_quarzfrequenz.getSelectionModel().selectFirst();
+	}
+	
+	//Wird beim Start druecken aufgerufen
+	private void getQuarzFrequenz(){
+		quarzfrequenz = 0;
+		quarzfrequenz = Double.parseDouble(((String) (choice_quarzfrequenz.getValue())).substring(0, 8));
+		System.out.println(quarzfrequenz);
+	}
+	
+	private void berechneLaufzeit(){
+		laufzeit += (1/quarzfrequenz);
 	}
 }
