@@ -11,6 +11,7 @@ import java.util.List;
 
 import simulator.BefehlDecoder;
 import simulator.Intcon;
+import simulator.Interrupt;
 import simulator.Laufzeit;
 import simulator.OptionRegister;
 import simulator.PortA;
@@ -476,8 +477,8 @@ public class SingleLayoutController {
 							}
 						});
 						
-						//Alter Wert von PortB erhalten
-						Intcon.getAlteWerte();
+						//Alter Wert der Register erhalten und ggf Interrupt Bits setzen
+						Interrupt.getAlteWerte();
 
 						//Warten, wenn Pause aktiviert ist
 						if(pause){
@@ -510,18 +511,24 @@ public class SingleLayoutController {
 							e.printStackTrace();
 						}
 						
+						//Option Register Array aus Speicher lesen
+						OptionRegister.speicherInOption();
+						
 						//Intcon Array aus Speicher lesen
 						Intcon.speicherInIntcon();
 						
-						//Neuer Wert von PortB erhalten. Setzt bei einer Aenderung direkt das RBIF!
-						Intcon.getNeueWerte();
+						//Neuer Wert der Register erhalten und ggf Interrupt Bits setzen
+						Interrupt.getNeueWerte();
 						
 						Laufzeit.taktzyklen_nachAufruf = taktzyklen; //Taktzyklen nach dem Aufruf speichern
 						//Laufzeit berechnen
 						Laufzeit.berechneLaufzeit();
 						
 						//Auf Interrupt pruefen
-						Intcon.pruefeInterrupt();
+						Interrupt.pruefeInterrupt();
+						
+						//Timer0 berechnen
+						Timer0.berechneTimer0();
 					}
 					
 					//Programmende
@@ -979,6 +986,8 @@ public class SingleLayoutController {
 		String comPort;
 		
 		comPort = (String) choice_hardware.getValue();
+		
+		//TODO: Hardwareansteuerung!
 		
 	}
 }

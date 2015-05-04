@@ -37,4 +37,8 @@ public class PortB {
 		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB] = portBToInt();
 		
 	}
+	
+	public static boolean getRB0INT(){
+		return portB[0];
+	}
 }

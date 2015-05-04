@@ -1,10 +1,10 @@
 package simulator;
 
-import simulator.controller.SingleLayoutController;
 
 public class Timer0 {
 	static short timer0 = 0;
 	static short prescaler = 0;
+	static short cycles_counter = 0;
 	
 	public static void berechneTimer0(){
 		//Pruefen, ob prescaler sich auf Timer0 bezieht und wenn ja, die Berechnung durchfuehren
@@ -25,15 +25,20 @@ public class Timer0 {
 			
 			prescaler = (short) Math.pow(2, (prescaler+1));
 			
-			//Timer0 erhoehen, wenn Prescaler erreicht
-			if((SingleLayoutController.taktzyklen % prescaler) == 0){
+			//Timer 0 erhoehen, wenn Prescaler erreicht
+			//Counter muss nicht exakt 4 sein (doppelte Cyclen)
+			if(cycles_counter >= 4){
 				if(timer0 == 255){
 					timer0 = 0;
-					//INTERRUPT AUFRUFEN!!!!!!!!!!!!!!!!!!
+					Intcon.setT0IF(true);
 				}
 				else{
 					timer0 ++;
 				}
+				//Counter zuruecksetzen
+				cycles_counter -= 4;
+				//Timer0 an seine Speicheradresse schreiben
+				timerInSpeicher();
 			}
 		}
 	}
@@ -41,12 +46,12 @@ public class Timer0 {
 	//Wert des Timers in seinen Speicher schreiben
 	public static void timerInSpeicher(){
 		//Timer0 in 0x1 speichern
-		BefehlDecoder.speicherZellen[1] = timer0;
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_TMR0] = timer0;
 	}
 	
 	//Wert des Timers aus seinem Speicher lesen
 	public static void speicherInTimer(){
 		//Timer aus 0x1 holen
-		timer0 = BefehlDecoder.speicherZellen[1];
+		timer0 = BefehlDecoder.speicherZellen[RegisterAdressen.ADR_TMR0];
 	}
 }

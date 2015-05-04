@@ -138,7 +138,14 @@ public class BefehlDecoder
 	}
 
 	private void retfie() {
-		// TODO Auto-generated method stub
+		//GIE Bit setzen
+		Intcon.setGIE(true);
+		
+		//Ruecksprungadresse holen
+		Stack.getStack();
+		
+		//Taktzyklen um 2 erhoehen
+		SingleLayoutController.taktzyklen = (Interrupt.cyclesAlt + 2);
 		
 	}
 

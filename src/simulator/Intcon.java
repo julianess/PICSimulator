@@ -11,12 +11,6 @@ public class Intcon {
 	private static final short GIE		= 7; //Global Interrupt Enable bit
 	
 	private static short intconadr = 0;
-	private static short portBAlt = 0;
-	private static short portBNeu = 0;
-	
-	private static short intedgAlt = 0;
-	private static short intedgNeu = 0;
-	
 	public static boolean [] intcon = new boolean[8];
 	
 	
@@ -86,9 +80,6 @@ public class Intcon {
 		return intcon[INTE];
 	}
 	
-
-	
-	
 	//GIE setzen
 	public static void setGIE(boolean status){
 		intcon[GIE] = status;
@@ -137,54 +128,6 @@ public class Intcon {
 			else{
 				intcon[i] = false;
 			}
-		}
-	}
-	
-	public static void pruefeInterrupt(){
-		//Nur Interrupt moeglich, wenn GIE Bit gesetzt
-		if(getGIE()){
-			//Timer 0 Interrupt moeglich, wenn T0IE Bit gesetzt
-			if(getT0IE()){
-				if(getT0IF()){
-					System.out.println("Timer 0 Interrupt!");
-					//TODO: TIMER 0 Interrupt!!!!!
-				}
-			}
-			
-			//RB Interrupt
-			if(getRBIE()){
-				if(getRBIF()){
-					System.out.println("RB changed Interrupt!");
-					//TODO: RB Interrupt!!!!!
-				}
-			}
-			
-			//RB0/INT
-			if(getINTE()){
-				if(getINTF()){
-					System.out.println("RB0INT Interrupt");
-				}
-			}
-		}
-	}
-	
-	public static void getAlteWerte(){
-		portBAlt = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB] & 240);
-		intedgAlt = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_OPTIONREG] & 64);
-	}
-	
-	public static void getNeueWerte(){
-		portBNeu = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB] & 240);
-		intedgNeu = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_OPTIONREG] & 64);
-		
-		//Bei Aenderung RBIF Bit setzen
-		if(portBNeu != portBAlt){
-			setRBIF(true);
-		}
-		
-		//Bei Aenderung des INTEDG INTF Bit setzen
-		if(intedgNeu != intedgAlt){
-			setINTF(true);
 		}
 	}
 }
