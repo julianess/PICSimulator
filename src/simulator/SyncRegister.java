@@ -2,24 +2,35 @@ package simulator;
 
 //Klasse fuer die Synchronisierung der "doppelt vorhandenen" Register
 public class SyncRegister {
-	private static final short FSR0 = 4;
-	private static final short FSR1 =  132;
-	private static final short PCL0 = 2;
-	private static final short PCL1 = 130;
-	private static final short INTCON0 = 11;
-	private static final short INTCON1 = 139;
 	
+	//Register zwischen Bank 0 und Bank 1 synchronisieren
 	public static void synchronisieren(){
 	
-		if(StatusRegister.statusBank()){
-			BefehlDecoder.speicherZellen[FSR0] = BefehlDecoder.speicherZellen[FSR1];
-			BefehlDecoder.speicherZellen[PCL0] = BefehlDecoder.speicherZellen[PCL1];
-			BefehlDecoder.speicherZellen[INTCON0] = BefehlDecoder.speicherZellen[INTCON1];
+		//Wenn Bank 1
+		if(StatusRegister.getBank()){
+			//Status Register
+			BefehlDecoder.speicherZellen[RegisterAdressen.ADR_STATUSREGISTER_0] = BefehlDecoder.speicherZellen[RegisterAdressen.ADR_STATUSREGISTER_1];
+			//FSR
+			BefehlDecoder.speicherZellen[RegisterAdressen.ADR_FSR_0] = BefehlDecoder.speicherZellen[RegisterAdressen.ADR_FSR_1];
+			//PCL
+			BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PCL_0] = BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PCL_1];
+			//INTCON
+			BefehlDecoder.speicherZellen[RegisterAdressen.ADR_INTCON_0] = BefehlDecoder.speicherZellen[RegisterAdressen.ADR_INTCON_1];
+			//PCLATH
+			BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PCLATH_0] = BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PCLATH_1];
 		}
+		//Wenn Bank 0
 		else{
-			BefehlDecoder.speicherZellen[FSR1] = BefehlDecoder.speicherZellen[FSR0];
-			BefehlDecoder.speicherZellen[PCL1] = BefehlDecoder.speicherZellen[PCL0];
-			BefehlDecoder.speicherZellen[INTCON1] = BefehlDecoder.speicherZellen[INTCON0];
+			//Status Register
+			BefehlDecoder.speicherZellen[RegisterAdressen.ADR_STATUSREGISTER_1] = BefehlDecoder.speicherZellen[RegisterAdressen.ADR_STATUSREGISTER_0];
+			//FSR
+			BefehlDecoder.speicherZellen[RegisterAdressen.ADR_FSR_1] = BefehlDecoder.speicherZellen[RegisterAdressen.ADR_FSR_0];
+			//PCL
+			BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PCL_1] = BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PCL_0];
+			//INTCON
+			BefehlDecoder.speicherZellen[RegisterAdressen.ADR_INTCON_1] = BefehlDecoder.speicherZellen[RegisterAdressen.ADR_INTCON_0];
+			//PCLATH
+			BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PCLATH_1] = BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PCLATH_0];
 		}
 	} 
 }

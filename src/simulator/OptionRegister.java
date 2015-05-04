@@ -28,12 +28,12 @@ public class OptionRegister {
 	//Wert des Registers in seinen Speicher schreiben
 	public static void optionInSpeicher(){
 		//Option Register in 0x81 speichern
-		BefehlDecoder.speicherZellen[129] = registerToInt();
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_OPTIONREG] = registerToInt();
 	}
 	
 	//Speicher in Option Register Array schreiben
 	public static void speicherInOption(){
-		short wert = BefehlDecoder.speicherZellen[129];
+		short wert = BefehlDecoder.speicherZellen[RegisterAdressen.ADR_OPTIONREG];
 		
 		for (int i = 0; i < register.length; i++){
 			if((wert & (short) Math.pow(2, i)) != 0){

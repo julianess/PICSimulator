@@ -14,6 +14,7 @@ import simulator.Laufzeit;
 import simulator.OptionRegister;
 import simulator.PortA;
 import simulator.PortB;
+import simulator.RegisterAdressen;
 import simulator.StatusRegister;
 import simulator.SyncRegister;
 import simulator.Timer0;
@@ -42,30 +43,9 @@ public class SingleLayoutController {
 	public static int programcounter = 0;
 	public static int taktzyklen = 0;
 	private int max_pcl = 0;
-	public static int [] tos = new int [8];
-	public static short tos_counter = 0;
 	public static boolean pause = false;
 	public static boolean schritt = false;
 	private boolean ersterStart = true;
-//	private double quarzfrequenz = 0;
-//	private double laufzeit = 0;
-
-	
-	public static void writeCounter()
-	{
-		tos[tos_counter] = programcounter+1;
-		tos_counter ++;
-		tos_counter = (short) (tos_counter & 7);
-	}
-	public static void getCounter()
-	{
-		tos_counter--;
-		programcounter = tos[tos_counter];
-		if(tos_counter < 0)
-		{
-			tos_counter = 7;
-		}
-	}
 	
 
 	private Thread t = null;
@@ -587,15 +567,15 @@ public class SingleLayoutController {
 		//Label wRegister aktualisieren
 		label_wRegister.setText("0x" + Integer.toHexString(BefehlDecoder.wRegister).toUpperCase());
 		//Label PCL aktualisieren
-		label_pcl.setText("0x" + Integer.toHexString(BefehlDecoder.speicherZellen[2]).toUpperCase());
+		label_pcl.setText("0x" + Integer.toHexString(BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PCL_0]).toUpperCase());
 		//Label PCLATH aktualisieren
 		label_pclath.setText("0x" + Integer.toHexString(BefehlDecoder.speicherZellen[10]).toUpperCase());
 		//Label FSR aktualisieren
-		label_fsr.setText("0x" + Integer.toHexString(BefehlDecoder.speicherZellen[4]).toUpperCase());
+		label_fsr.setText("0x" + Integer.toHexString(BefehlDecoder.speicherZellen[RegisterAdressen.ADR_FSR_0]).toUpperCase());
 		//Label Programmcounter aktualisieren
 		label_programcounter.setText("0x" + Integer.toHexString(programcounter).toUpperCase());
 		//Label Status aktualisieren
-		label_status.setText("0x" + Integer.toHexString(BefehlDecoder.speicherZellen[3]).toUpperCase());
+		label_status.setText("0x" + Integer.toHexString(BefehlDecoder.speicherZellen[RegisterAdressen.ADR_STATUSREGISTER_0]).toUpperCase());
 		//Label Taktzyklen aktualisieren
 		label_taktzyklen.setText("0x" + Integer.toHexString(taktzyklen).toUpperCase());
 		//Label Laufzeit aktualisieren
@@ -808,46 +788,52 @@ public class SingleLayoutController {
 		
 		//Spezielle Register nach Schema: Bank0 = Bank1 = Wert
 		
-		//Adr 0 - kein physikalisches Register - als 0
-		BefehlDecoder.speicherZellen[0] = BefehlDecoder.speicherZellen[128] = 0;
+		//Adr 0x0 - kein physikalisches Register - als 0
+		BefehlDecoder.speicherZellen[0] = 0;
+		//Adr 0x80 - kein physikalisches Register - als 0
+		BefehlDecoder.speicherZellen[128] = 0;
+		
 		//TMR0 unknown, NUR AUF BANK 0!
-		BefehlDecoder.speicherZellen[1] = (short) (BefehlDecoder.speicherZellen[1] & 255);
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_TMR0] = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_TMR0] & 255);
 		//OPTION_REG, NUR AUF BANK 1!
-		BefehlDecoder.speicherZellen[129] = 255;
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_OPTIONREG] = 255;
 		//PCL
-		BefehlDecoder.speicherZellen[2] = 0;
-		BefehlDecoder.speicherZellen[130] = 0;
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PCL_0] = 0;
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PCL_1] = 0;
 		//STATUS
-		BefehlDecoder.speicherZellen[3] = (short) (BefehlDecoder.speicherZellen[3] | 24);
-		BefehlDecoder.speicherZellen[131] = (short) (BefehlDecoder.speicherZellen[131] | 24);;
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_STATUSREGISTER_0] = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_STATUSREGISTER_0] | 24);
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_STATUSREGISTER_1] = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_STATUSREGISTER_1] | 24);;
 		//FSR unknown
-		BefehlDecoder.speicherZellen[4] = (short) (BefehlDecoder.speicherZellen[4] & 255);
-		BefehlDecoder.speicherZellen[132] = (short) (BefehlDecoder.speicherZellen[132] & 255);
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_FSR_0] = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_FSR_0] & 255);
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_FSR_1] = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_FSR_1] & 255);
 		//PortA, NUR AUF BANK 0!
-		BefehlDecoder.speicherZellen[5] = (short) (BefehlDecoder.speicherZellen[5] & 31);
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTA] = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTA] & 31);
 		//TrisA, NUR AUF BANK 1!
-		BefehlDecoder.speicherZellen[133] = 31;
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_TRISA] = 31;
 		//PortB unknown, NUR AUF BANK 0!
-		BefehlDecoder.speicherZellen[6] = (short) (BefehlDecoder.speicherZellen[6] & 255);
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB] = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB] & 255);
 		//TrisB, NUR AUF BANK 1!
-		BefehlDecoder.speicherZellen[134] = 255;
-		//Unimplemented Adr 0x7 und Adr 0x87 als 0
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_TRISB] = 255;
+		
+		//Unimplemented Adr 0x7 als 0
 		BefehlDecoder.speicherZellen[7] = 0;
+		//Unimplemented Adr 0x87 als 0
 		BefehlDecoder.speicherZellen[135] = 0;
+		
 		//EEDATA unknown, NUR AUF BANK 0!
-		BefehlDecoder.speicherZellen[8] = (short) (BefehlDecoder.speicherZellen[7] & 255);
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_EEDATA] = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_EEDATA] & 255);
 		//EECON1, NUR AUF BANNK 1!
-		BefehlDecoder.speicherZellen[136] = (short) (BefehlDecoder.speicherZellen[136] & 8);
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_EECON1] = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_EECON1] & 8);
 		//EEADR unknown, NUR AUF BANK 0!
-		BefehlDecoder.speicherZellen[9] = (short) (BefehlDecoder.speicherZellen[8] & 255);
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_EEADR] = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_EEADR] & 255);
 		//EECON2, NUR AUF BANNK 1! kein physikalisches Register - als 0
-		BefehlDecoder.speicherZellen[137] = 0;
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_EECON2] = 0;
 		//PCLATH
-		BefehlDecoder.speicherZellen[10] = 0;
-		BefehlDecoder.speicherZellen[138] = 0;
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PCLATH_0] = 0;
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PCLATH_1] = 0;
 		//INTCON
-		BefehlDecoder.speicherZellen[11] = (short) (BefehlDecoder.speicherZellen[6] & 1);
-		BefehlDecoder.speicherZellen[139] = (short) (BefehlDecoder.speicherZellen[139] & 1);
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_INTCON_0] = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_INTCON_0] & 1);
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_INTCON_1] = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_INTCON_1] & 1);
 	
 		OptionRegister.speicherInOption();
 		StatusRegister.speicherInStatus();

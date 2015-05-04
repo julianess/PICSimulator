@@ -16,7 +16,7 @@ public class PortA {
 	
 	public static void setPortA(){
 		for (int i = 0; i < portA.length; i++){
-			if((BefehlDecoder.speicherZellen[5] & (short) Math.pow(2, i)) != 0){
+			if((BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTA] & (short) Math.pow(2, i)) != 0){
 				portA[i] = true;
 			}
 			else{
@@ -33,7 +33,7 @@ public class PortA {
 			portA[pin] = true;	
 		}
 		
-		BefehlDecoder.speicherZellen[0x5] = portAToInt();
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTA] = portAToInt();
 	}
 	
 }

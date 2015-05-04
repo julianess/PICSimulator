@@ -133,7 +133,7 @@ public class BefehlDecoder
 	}
 
 	private void returnBefehl() {
-		SingleLayoutController.getCounter();
+		Stack.getStack();
 		SingleLayoutController.taktzyklen += 2;
 	}
 
@@ -542,7 +542,7 @@ public class BefehlDecoder
 		}
 		
 		//wenn Carry Bit gesetzt ist rechtes Bit des Ergebnis setzen (+1), da nach Shift rechts 0
-		if(StatusRegister.statusCarryBit()){
+		if(StatusRegister.getCarryBit()){
 			ergebnisRRF += 128;
 		}
 		
@@ -586,7 +586,7 @@ public class BefehlDecoder
 		}
 		
 		//wenn Carry Bit gesetzt ist rechtes Bit des Ergebnis setzen (+1), da nach Shift rechts 0
-		if(StatusRegister.statusCarryBit()){
+		if(StatusRegister.getCarryBit()){
 			ergebnisRLF += 1;
 		}
 		
@@ -727,7 +727,7 @@ public class BefehlDecoder
 
 	private void call(short befehlcode2) {
 		short k = (short) (befehlcode2 & 255);
-		SingleLayoutController.writeCounter();
+		Stack.writeStack();
 		SingleLayoutController.programcounter = k;
 		SingleLayoutController.taktzyklen += 2;
 	}
@@ -748,7 +748,7 @@ public class BefehlDecoder
 	private void retlw(short befehlcode2) {
 		short k = (short)(befehlcode2 & 255);
 		wRegister = k;
-		SingleLayoutController.getCounter();
+		Stack.getStack();
 		SingleLayoutController.taktzyklen += 2;
 	}
 
@@ -901,7 +901,7 @@ public class BefehlDecoder
 			return (short) speicherZellen[FSR];
 		}
 		//Fuer jede Adressierung abpruefen, ob Bank 0 oder Bank 1. Wenn Bank 1, dann adresse +127
-		if (StatusRegister.statusBank()) {
+		if (StatusRegister.getBank()) {
 			adresse += 128;
 		}
 		return adresse;

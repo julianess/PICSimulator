@@ -17,7 +17,7 @@ public class PortB {
 	
 	public static void setPortB(){
 		for (int i = 0; i < portB.length; i++){
-			if((BefehlDecoder.speicherZellen[6] & (short) Math.pow(2, i)) != 0){
+			if((BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB] & (short) Math.pow(2, i)) != 0){
 				portB[i] = true;
 			}
 			else{
@@ -34,7 +34,7 @@ public class PortB {
 			portB[pin] = true;	
 		}
 		
-		BefehlDecoder.speicherZellen[0x6] = portBToInt();
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB] = portBToInt();
 		
 	}
 }
