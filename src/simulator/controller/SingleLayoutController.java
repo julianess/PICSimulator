@@ -15,6 +15,7 @@ import simulator.OptionRegister;
 import simulator.PortA;
 import simulator.PortB;
 import simulator.RegisterAdressen;
+import simulator.SeriellerPort;
 import simulator.StatusRegister;
 import simulator.SyncRegister;
 import simulator.Timer0;
@@ -47,7 +48,6 @@ public class SingleLayoutController {
 	public static boolean schritt = false;
 	private boolean ersterStart = true;
 	
-
 	private Thread t = null;
 
 	@FXML
@@ -157,6 +157,29 @@ public class SingleLayoutController {
 	private Label label_pinb_6;
 	@FXML
 	private Label label_pinb_7;
+	
+	//Stack Label's
+	@FXML
+	private Label stack_0;
+	@FXML
+	private Label stack_1;
+	@FXML
+	private Label stack_2;
+	@FXML
+	private Label stack_3;
+	@FXML
+	private Label stack_4;
+	@FXML
+	private Label stack_5;
+	@FXML
+	private Label stack_6;
+	@FXML
+	private Label stack_7;
+	
+	//Drop Down
+	@SuppressWarnings("rawtypes" )
+	@FXML
+	private ChoiceBox choice_hardware;
 	
 	
 	
@@ -910,6 +933,18 @@ public class SingleLayoutController {
 			    "80.00000 MHz")
 			);
 		choice_quarzfrequenz.getSelectionModel().selectFirst();
+	}
+	
+	@FXML
+	public void setComPorts(){
+		
+		List<String> comPorts = SeriellerPort.getAllPorts();
+		ObservableList<String> availablePorts = null;
+		
+		for (int i = 0; i < comPorts.size(); i++) {
+			availablePorts.add(comPorts.get(i));
+		}
+		choice_hardware.setItems(FXCollections.observableList(comPorts));
 	}
 	
 	//Wird beim Start druecken aufgerufen
