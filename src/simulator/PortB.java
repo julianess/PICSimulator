@@ -34,11 +34,15 @@ public class PortB {
 			portB[pin] = true;	
 		}
 		
-		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB] = portBToInt();
+		portBinSpeicher();
 		
 	}
 	
 	public static boolean getRB0INT(){
 		return portB[0];
+	}
+	
+	public static void portBinSpeicher(){
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB] = portBToInt();
 	}
 }
