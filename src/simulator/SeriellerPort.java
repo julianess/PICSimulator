@@ -35,19 +35,11 @@ public class SeriellerPort {
 	     */
 	    CommPort commPort;
 
-	    /** Konstruktor für ComPort.
-	     * Initialisiert die Werte von TrisA, TrisB, PortA und PortB, so kann
-	     * der CommPort auch im laufenden Betrieb zugeschaltet werden.
-	     * @param aTrisA Vom Typ INT enthält den aktuellen Wert des TrisA
-	     * @param aPortA Vom Typ INT enthält den aktuellen Wert des PortA
-	     * @param aTrisB Vom Typ INT enthält den aktuellen Wert des TrisB
-	     * @param aPortB Vom Typ INT enthält den aktuellen Wert des PortB
-	     */
-	    public SeriellerPort(int aTrisA, int aPortA, int aTrisB, int aPortB) {
-	        trisA = aTrisA;
-	        portA = aPortA;
-	        trisB = aTrisB;
-	        portB = aPortB;
+	    public SeriellerPort() {
+	        trisA = BefehlDecoder.speicherZellen[RegisterAdressen.ADR_TRISA];
+	        portA = BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTA];
+	        trisB = BefehlDecoder.speicherZellen[RegisterAdressen.ADR_TRISB];
+	        portB = BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB];
 	    }
 
 	    /** Methode um den CommPort zu vebinden.

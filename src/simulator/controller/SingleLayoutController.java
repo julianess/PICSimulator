@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import simulator.BefehlDecoder;
+import simulator.Intcon;
 import simulator.Laufzeit;
 import simulator.OptionRegister;
 import simulator.PortA;
@@ -259,6 +260,9 @@ public class SingleLayoutController {
 			//choiceBox fuer Quarzfrequenz fuellen
 			erzeugeFrequenzChoice();
 			
+			//choiceBox fuer Hardware
+			setComPorts();
+			
 			ersterStart = false;
 		}
 		else{
@@ -430,6 +434,9 @@ public class SingleLayoutController {
 		//Quarzfrequenz lesen
 		getQuarzFrequenz();
 		
+		//ComPort lesen
+		getComPortsChoice();
+		
 		if (t == null) {
 
 			// Task um die UI Funktionalität nicht zu blockieren
@@ -448,6 +455,7 @@ public class SingleLayoutController {
 					//Hauptschleife
 					for (int i = 0; i <= max_pcl; i = programcounter)
 					{
+						//Register synchronisieren
 						SyncRegister.synchronisieren();
 						
 						//Speichertabelle als Ansicht Aktualisieren
@@ -467,6 +475,9 @@ public class SingleLayoutController {
 								felderAktualisieren();
 							}
 						});
+						
+						//Alter Wert von PortB erhalten
+						Intcon.getAlteWerte();
 
 						//Warten, wenn Pause aktiviert ist
 						if(pause){
@@ -489,17 +500,28 @@ public class SingleLayoutController {
 						
 						short test = getLine();
 						System.out.println("PCL: " + programcounter+ "  Code: " + test + "\n");
+						
+						//Eigentliches Ausfuehren
 						decoder.decode(test);
+						
 						try {
 							Thread.sleep(100);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
 						
-						Laufzeit.taktzyklen_nachAufruf = taktzyklen; //Taktzyklen nach dem Aufruf speichern
+						//Intcon Array aus Speicher lesen
+						Intcon.speicherInIntcon();
 						
+						//Neuer Wert von PortB erhalten. Setzt bei einer Aenderung direkt das RBIF!
+						Intcon.getNeueWerte();
+						
+						Laufzeit.taktzyklen_nachAufruf = taktzyklen; //Taktzyklen nach dem Aufruf speichern
 						//Laufzeit berechnen
 						Laufzeit.berechneLaufzeit();
+						
+						//Auf Interrupt pruefen
+						Intcon.pruefeInterrupt();
 					}
 					
 					//Programmende
@@ -935,22 +957,28 @@ public class SingleLayoutController {
 		choice_quarzfrequenz.getSelectionModel().selectFirst();
 	}
 	
+	@SuppressWarnings("unchecked")
 	@FXML
 	public void setComPorts(){
 		
-		List<String> comPorts = SeriellerPort.getAllPorts();
-		ObservableList<String> availablePorts = null;
+		List<String> comPorts = SeriellerPort.getAllPorts();		
+		ObservableList<String> availablePorts = FXCollections.observableArrayList(comPorts);
 		
-		for (int i = 0; i < comPorts.size(); i++) {
-			availablePorts.add(comPorts.get(i));
-		}
-		choice_hardware.setItems(FXCollections.observableList(comPorts));
+		choice_hardware.setItems(availablePorts);
 	}
 	
 	//Wird beim Start druecken aufgerufen
 	private void getQuarzFrequenz(){
 		Laufzeit.einheit = ((String) choice_quarzfrequenz.getValue()).substring(9, 12);
-		System.out.println(Laufzeit.einheit);
 		Laufzeit.quarzfrequenz = Double.parseDouble(((String) (choice_quarzfrequenz.getValue())).substring(0, 8));
+	}
+	
+	@FXML
+	public void getComPortsChoice(){
+		
+		String comPort;
+		
+		comPort = (String) choice_hardware.getValue();
+		
 	}
 }
