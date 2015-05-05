@@ -22,24 +22,27 @@ public class Timer0 {
 			if(OptionRegister.getPS0()){
 				prescaler += 1;
 			}
-			
 			prescaler = (short) Math.pow(2, (prescaler+1));
+		}
+		else{
+			prescaler = 1;
+		}
 			
-			//Timer 0 erhoehen, wenn Prescaler erreicht
-			//Counter muss nicht exakt 4 sein (doppelte Cyclen)
-			if(cycles_counter >= 4){
-				if(timer0 == 255){
-					timer0 = 0;
-					Intcon.setT0IF(true);
-				}
-				else{
-					timer0 ++;
-				}
-				//Counter zuruecksetzen
-				cycles_counter -= 4;
-				//Timer0 an seine Speicheradresse schreiben
-				timerInSpeicher();
+		System.out.println("Prescaler: " + prescaler);
+		//Timer 0 erhoehen, wenn Prescaler erreicht
+		//Counter muss nicht exakt Prescaler sein (doppelte Cyclen)
+		if(cycles_counter >= prescaler){
+			if(timer0 >= 255){
+				timer0 = (short) (timer0 - 255);
+				Intcon.setT0IF(true);
 			}
+			else{
+				timer0 ++;
+			}
+			//Counter zuruecksetzen
+			cycles_counter -= prescaler;
+			//Timer0 an seine Speicheradresse schreiben
+			timerInSpeicher();
 		}
 	}
 	
