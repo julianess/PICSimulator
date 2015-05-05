@@ -45,13 +45,13 @@ public class Interrupt {
 	
 	public static void getAlteWerte(){
 		portBAlt = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB] & 240);
-		rb0intAlt = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_OPTIONREG] & 64);
+		rb0intAlt = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB] & 1);
 		timer0Alt = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_TMR0] & 255);
 	}
 	
 	public static void getNeueWerte(){
 		portBNeu = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB] & 240);
-		rb0intNeu = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_OPTIONREG] & 64);
+		rb0intNeu = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB] & 1);
 		timer0Neu = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_TMR0] & 255);
 		
 		//Bei Aenderung RBIF Bit setzen
