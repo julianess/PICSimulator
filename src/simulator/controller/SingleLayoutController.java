@@ -18,6 +18,7 @@ import simulator.PortA;
 import simulator.PortB;
 import simulator.RegisterAdressen;
 import simulator.SeriellerPort;
+import simulator.Stack;
 import simulator.StatusRegister;
 import simulator.SyncRegister;
 import simulator.Timer0;
@@ -36,6 +37,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -261,8 +263,7 @@ public class SingleLayoutController {
 			//choiceBox fuer Quarzfrequenz fuellen
 			erzeugeFrequenzChoice();
 			
-			//choiceBox fuer Hardware
-			setComPorts();
+	setComPorts();
 			
 			ersterStart = false;
 		}
@@ -432,6 +433,8 @@ public class SingleLayoutController {
 		BefehlDecoder decoder = new BefehlDecoder();
 		pause = false;
 		
+		
+		
 		//Quarzfrequenz lesen
 		getQuarzFrequenz();
 		
@@ -439,7 +442,7 @@ public class SingleLayoutController {
 		getComPortsChoice();
 		
 		if (t == null) {
-
+			powerOnReset();
 			// Task um die UI Funktionalität nicht zu blockieren
 			Runnable task = new Runnable() {
 				@Override
@@ -464,7 +467,10 @@ public class SingleLayoutController {
 							
 							@Override
 							public void run() {
-								aktualisiereSpeicherView();	
+								//Speicher Tabelle aktualisieren
+								aktualisiereSpeicherView();
+								//Stack Tabelle Aktualisieren
+								aktualisiereStackGUI();
 							}
 						});
 						
@@ -535,7 +541,6 @@ public class SingleLayoutController {
 					if(programcounter >= max_pcl)
 					{
 						t = null;
-						programcounter = 0;
 						max_pcl = 0;
 					}
 				};
@@ -837,6 +842,7 @@ public class SingleLayoutController {
 		programcounter = 0;
 		taktzyklen = 0;
 		Laufzeit.laufzeit = 0;
+		Stack.clearStack();
 		
 		//Spezielle Register nach Schema: Bank0 = Bank1 = Wert
 		
@@ -854,7 +860,7 @@ public class SingleLayoutController {
 		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PCL_1] = 0;
 		//STATUS
 		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_STATUSREGISTER_0] = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_STATUSREGISTER_0] | 24);
-		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_STATUSREGISTER_1] = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_STATUSREGISTER_1] | 24);;
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_STATUSREGISTER_1] = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_STATUSREGISTER_1] | 24);
 		//FSR unknown
 		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_FSR_0] = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_FSR_0] & 255);
 		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_FSR_1] = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_FSR_1] & 255);
@@ -989,5 +995,66 @@ public class SingleLayoutController {
 		
 		//TODO: Hardwareansteuerung!
 		
+	}
+	
+	private void aktualisiereStackGUI(){
+		
+		stack_0.setText(Integer.toHexString(Stack.stack[0]));
+		stack_1.setText(Integer.toHexString(Stack.stack[1]));
+		stack_2.setText(Integer.toHexString(Stack.stack[2]));
+		stack_3.setText(Integer.toHexString(Stack.stack[3]));
+		stack_4.setText(Integer.toHexString(Stack.stack[4]));
+		stack_5.setText(Integer.toHexString(Stack.stack[5]));
+		stack_6.setText(Integer.toHexString(Stack.stack[6]));
+		stack_7.setText(Integer.toHexString(Stack.stack[7]));
+		
+		switch (Stack.stack_pointer) {
+		case 0:
+			setStackFont();
+			stack_0.setTextFill(Color.RED);
+			break;
+		case 1:
+			setStackFont();
+			stack_1.setTextFill(Color.RED);
+			break;
+		case 2:
+			setStackFont();
+			stack_2.setTextFill(Color.RED);
+			break;
+		case 3:
+			setStackFont();
+			stack_3.setTextFill(Color.RED);
+			break;
+		case 4:
+			setStackFont();
+			stack_4.setTextFill(Color.RED);
+			break;
+		case 5:
+			setStackFont();
+			stack_5.setTextFill(Color.RED);
+			break;
+		case 6:
+			setStackFont();
+			stack_6.setTextFill(Color.RED);
+			break;
+		case 7:
+			setStackFont();
+			stack_7.setTextFill(Color.RED);
+			break;
+		default:
+			break;
+		}
+		
+	}
+	
+	private void setStackFont(){
+		stack_0.setTextFill(Color.BLACK);
+		stack_1.setTextFill(Color.BLACK);
+		stack_2.setTextFill(Color.BLACK);
+		stack_3.setTextFill(Color.BLACK);
+		stack_4.setTextFill(Color.BLACK);
+		stack_5.setTextFill(Color.BLACK);
+		stack_6.setTextFill(Color.BLACK);
+		stack_7.setTextFill(Color.BLACK);
 	}
 }

@@ -22,4 +22,11 @@ public class Stack {
 			stack_pointer = 7;
 		}
 	}
+	
+	public static void clearStack(){
+		stack_pointer = 0;
+		for (int i = 0; i < stack.length; i++) {
+			stack[i] = 0;
+		}
+	}
 }
