@@ -10,18 +10,18 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import simulator.BefehlDecoder;
-import simulator.Intcon;
 import simulator.Interrupt;
 import simulator.Laufzeit;
-import simulator.OptionRegister;
 import simulator.PortA;
 import simulator.PortB;
+import simulator.Programcounter;
 import simulator.RegisterAdressen;
 import simulator.SeriellerPort;
 import simulator.Stack;
-import simulator.StatusRegister;
 import simulator.SyncRegister;
 import simulator.Timer0;
+import simulator.TrisA;
+import simulator.TrisB;
 import simulator.ValueClass;
 import simulator.ValueClassSpeicher;
 import javafx.application.Platform;
@@ -45,9 +45,9 @@ public class SingleLayoutController {
 
 	private ObservableList<ValueClass> data = FXCollections.observableArrayList();
 	private ObservableList<ValueClassSpeicher> data_speicher = FXCollections.observableArrayList();
-	public static int programcounter = 0;
+	//public static int programcounter = 0;
 	public static int taktzyklen = 0;
-	private int max_pcl = 0;
+	private int maximalerPC = 0;
 	public static boolean pause = false;
 	public static boolean schritt = false;
 	private boolean ersterStart = true;
@@ -284,6 +284,14 @@ public class SingleLayoutController {
 			
 			//Speichertabelle aktualisieren
 			aktualisiereSpeicherView();
+			//TrisA Ansicht aktualisieren (i/o)
+			aktualisiereTrisA();
+			//TrisB Ansicht aktualisieren (i/o)
+			aktualisiereTrisB();
+			//PortA Ansicht aktualisieren
+			aktualisierePortA();
+			//PortB Ansicht aktualisiseren
+			aktualisierePortB();
 		}
 		//Power-On-Reset durchfuehren
 		powerOnReset();
@@ -310,17 +318,17 @@ public class SingleLayoutController {
 	public short getLine() {
 		String pclString; //String fuer den PCL
 		
-		//PCL String formatieren, sodass er immer 4-Stellig Hex angezeigt wird
-		if (programcounter < 16)
+		//Programcounter.pc String formatieren, sodass er immer 4-Stellig Hex angezeigt wird
+		if (Programcounter.pc < 16)
 			pclString = "000"
-					+ Integer.toHexString(programcounter).toUpperCase();
-		else if (programcounter < 256)
+					+ Integer.toHexString(Programcounter.pc).toUpperCase();
+		else if (Programcounter.pc < 256)
 			pclString = "00"
-					+ Integer.toHexString(programcounter).toUpperCase();
-		else if (programcounter < 4096)
-			pclString = "0" + Integer.toHexString(programcounter).toUpperCase();
+					+ Integer.toHexString(Programcounter.pc).toUpperCase();
+		else if (Programcounter.pc < 4096)
+			pclString = "0" + Integer.toHexString(Programcounter.pc).toUpperCase();
 		else
-			pclString = Integer.toHexString(programcounter).toUpperCase();
+			pclString = Integer.toHexString(Programcounter.pc).toUpperCase();
 		
 		
 		for (int i = 0; i <= table.getItems().size(); i++) {
@@ -452,12 +460,12 @@ public class SingleLayoutController {
 					for (int i = 0; i < table.getItems().size(); i++)
 					{
 						if (!table_pcl.getCellData(i).equals("")) {
-							 max_pcl = (short) Integer.parseInt(table_pcl.getCellData(i), 16);
+							 maximalerPC = (short) Integer.parseInt(table_pcl.getCellData(i), 16);
 						}
 					}
 					
 					//Hauptschleife
-					for (int i = 0; i <= max_pcl; i = programcounter)
+					for (int i = 0; i <= maximalerPC; i = Programcounter.pc)
 					{
 						//Register synchronisieren
 						SyncRegister.synchronisieren();
@@ -471,6 +479,14 @@ public class SingleLayoutController {
 								aktualisiereSpeicherView();
 								//Stack Tabelle Aktualisieren
 								aktualisiereStackGUI();
+								//TrisA Ansicht aktualisieren (i/o)
+								aktualisiereTrisA();
+								//TrisB Ansicht aktualisieren (i/o)
+								aktualisiereTrisB();
+								//PortA Ansicht aktualisieren
+								aktualisierePortA();
+								//PortB Ansicht aktualisiseren
+								aktualisierePortB();
 							}
 						});
 						
@@ -503,10 +519,8 @@ public class SingleLayoutController {
 							pause = true;
 						}
 						
-						Laufzeit.taktzyklen_vorAufruf = taktzyklen; //Taktzyklen vor dem Aufruf speichern
-						
 						short test = getLine();
-						System.out.println("PCL: " + programcounter+ "  Code: " + test + "\n");
+						System.out.println("PC: " + Programcounter.pc+ "  Code: " + test + "\n");
 						
 						//Eigentliches Ausfuehren
 						decoder.decode(test);
@@ -517,16 +531,17 @@ public class SingleLayoutController {
 							e.printStackTrace();
 						}
 						
-						//Option Register Array aus Speicher lesen
-						OptionRegister.speicherInOption();
+						//Direkt nach Aufruf ausfuehren:
 						
-						//Intcon Array aus Speicher lesen
-						Intcon.speicherInIntcon();
+						//Alle Register neu aus dem Speicher in ihre Arrays laden
+						SyncRegister.speicherInRegister();
+						
+						//Alle "doppelten" Register synchronisiseren
+						SyncRegister.synchronisieren();
 						
 						//Neuer Wert der Register erhalten und ggf Interrupt Bits setzen
 						Interrupt.getNeueWerte();
 						
-						Laufzeit.taktzyklen_nachAufruf = taktzyklen; //Taktzyklen nach dem Aufruf speichern
 						//Laufzeit berechnen
 						Laufzeit.berechneLaufzeit();
 						
@@ -538,10 +553,10 @@ public class SingleLayoutController {
 					}
 					
 					//Programmende
-					if(programcounter >= max_pcl)
+					if(Programcounter.pc >= maximalerPC)
 					{
 						t = null;
-						max_pcl = 0;
+						maximalerPC = 0;
 					}
 				};
 			};
@@ -569,7 +584,7 @@ public class SingleLayoutController {
 		if (t != null) {
 			t.stop();
 			t = null;
-			programcounter = 0;
+			Programcounter.pc = 0;
 			pause = false;
 		}
 		else {
@@ -619,7 +634,7 @@ public class SingleLayoutController {
 
 	public void felderAktualisieren(){
 		
-		BefehlDecoder.speicherZellen[0x2] = BefehlDecoder.speicherZellen[0x82] = (short) programcounter;
+		//BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PCL_0] = BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PCL_1] = (short) Programcounter.pcl;
 		
 		//Label wRegister aktualisieren
 		label_wRegister.setText("0x" + Integer.toHexString(BefehlDecoder.wRegister).toUpperCase());
@@ -630,7 +645,7 @@ public class SingleLayoutController {
 		//Label FSR aktualisieren
 		label_fsr.setText("0x" + Integer.toHexString(BefehlDecoder.speicherZellen[RegisterAdressen.ADR_FSR_0]).toUpperCase());
 		//Label Programmcounter aktualisieren
-		label_programcounter.setText("0x" + Integer.toHexString(programcounter).toUpperCase());
+		label_programcounter.setText("0x" + Integer.toHexString(Programcounter.pc).toUpperCase());
 		//Label Status aktualisieren
 		label_status.setText("0x" + Integer.toHexString(BefehlDecoder.speicherZellen[RegisterAdressen.ADR_STATUSREGISTER_0]).toUpperCase());
 		//Label Taktzyklen aktualisieren
@@ -839,7 +854,10 @@ public class SingleLayoutController {
 	}
 	
 	private void powerOnReset(){
-		programcounter = 0;
+		Programcounter.pc = 0;
+		Programcounter.pcl = 0;
+		Programcounter.pclath = 0;
+		
 		taktzyklen = 0;
 		Laufzeit.laufzeit = 0;
 		Stack.clearStack();
@@ -893,13 +911,23 @@ public class SingleLayoutController {
 		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_INTCON_0] = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_INTCON_0] & 1);
 		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_INTCON_1] = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_INTCON_1] & 1);
 	
-		OptionRegister.speicherInOption();
-		StatusRegister.speicherInStatus();
-		Timer0.speicherInTimer();
-		Laufzeit.berechneLaufzeit();
+		//Register Arrays aus Speicher laden
+		SyncRegister.speicherInRegister();
+		//Register synchronisieren
+		SyncRegister.synchronisieren();
 		
+		//Felder der ersten View aktualisiseren (wRegister, ... )
 		felderAktualisieren();
+		//Speichertabellen View aktualisiseren
 		aktualisiereSpeicherView();
+		//TrisA Ansicht aktualisieren (i/o)
+		aktualisiereTrisA();
+		//TrisB Ansicht aktualisieren (i/o)
+		aktualisiereTrisB();
+		//PortA Ansicht aktualisieren
+		aktualisierePortA();
+		//PortB Ansicht aktualisiseren
+		aktualisierePortB();
 	}
 	
 	@SuppressWarnings("static-access")
@@ -999,14 +1027,14 @@ public class SingleLayoutController {
 	
 	private void aktualisiereStackGUI(){
 		
-		stack_0.setText(Integer.toHexString(Stack.stack[0]));
-		stack_1.setText(Integer.toHexString(Stack.stack[1]));
-		stack_2.setText(Integer.toHexString(Stack.stack[2]));
-		stack_3.setText(Integer.toHexString(Stack.stack[3]));
-		stack_4.setText(Integer.toHexString(Stack.stack[4]));
-		stack_5.setText(Integer.toHexString(Stack.stack[5]));
-		stack_6.setText(Integer.toHexString(Stack.stack[6]));
-		stack_7.setText(Integer.toHexString(Stack.stack[7]));
+		stack_0.setText(Integer.toHexString(Stack.stack[0]).toUpperCase());
+		stack_1.setText(Integer.toHexString(Stack.stack[1]).toUpperCase());
+		stack_2.setText(Integer.toHexString(Stack.stack[2]).toUpperCase());
+		stack_3.setText(Integer.toHexString(Stack.stack[3]).toUpperCase());
+		stack_4.setText(Integer.toHexString(Stack.stack[4]).toUpperCase());
+		stack_5.setText(Integer.toHexString(Stack.stack[5]).toUpperCase());
+		stack_6.setText(Integer.toHexString(Stack.stack[6]).toUpperCase());
+		stack_7.setText(Integer.toHexString(Stack.stack[7]).toUpperCase());
 		
 		switch (Stack.stack_pointer) {
 		case 0:
@@ -1056,5 +1084,284 @@ public class SingleLayoutController {
 		stack_5.setTextFill(Color.BLACK);
 		stack_6.setTextFill(Color.BLACK);
 		stack_7.setTextFill(Color.BLACK);
+	}
+	
+	private void aktualisiereTrisA(){
+		//TrisA Ansicht aktualisieren
+		//Ist ein Pin gesetzt (1), dann ist dieser Pin ein Input
+		//Ist ein Pin cleared (0), dann ist dieser Pin ein Output
+		
+		//TrisA[0]
+		if(TrisA.trisA[0]){
+			label_trisa_0.setText("i");
+		}
+		else{
+			label_trisa_0.setText("o");
+		}
+		
+		//TrisA[1]
+		if(TrisA.trisA[1]){
+			label_trisa_1.setText("i");
+		}
+		else{
+			label_trisa_1.setText("o");
+		}
+		
+		//TrisA[2]
+		if(TrisA.trisA[2]){
+			label_trisa_2.setText("i");
+		}
+		else{
+			label_trisa_2.setText("o");
+		}
+		
+		//TrisA[3]
+		if(TrisA.trisA[3]){
+			label_trisa_3.setText("i");
+		}
+		else{
+			label_trisa_3.setText("o");
+		}
+		
+		//TrisA[4]
+		if(TrisA.trisA[4]){
+			label_trisa_4.setText("i");
+		}
+		else{
+			label_trisa_4.setText("o");
+		}
+		
+		//TrisA[5]
+		if(TrisA.trisA[5]){
+			label_trisa_5.setText("i");
+		}
+		else{
+			label_trisa_5.setText("o");
+		}
+		
+		//TrisA[6]
+		if(TrisA.trisA[6]){
+			label_trisa_6.setText("i");
+		}
+		else{
+			label_trisa_6.setText("o");
+		}
+		
+		//TrisA[7]
+		if(TrisA.trisA[7]){
+			label_trisa_7.setText("i");
+		}
+		else{
+			label_trisa_7.setText("o");
+		}
+	}
+	
+	
+	private void aktualisiereTrisB(){
+		//TrisB Ansicht aktualisieren
+		//Ist ein Pin gesetzt (1), dann ist dieser Pin ein Input
+		//Ist ein Pin cleared (0), dann ist dieser Pin ein Output
+		
+		//TrisB[0]
+		if(TrisB.trisB[0]){
+			label_trisb_0.setText("i");
+		}
+		else{
+			label_trisb_0.setText("o");
+		}
+		
+		//TrisB[1]
+		if(TrisB.trisB[1]){
+			label_trisb_1.setText("i");
+		}
+		else{
+			label_trisb_1.setText("o");
+		}
+		
+		//TrisB[2]
+		if(TrisB.trisB[2]){
+			label_trisb_2.setText("i");
+		}
+		else{
+			label_trisb_2.setText("o");
+		}
+		
+		//TrisB[3]
+		if(TrisB.trisB[3]){
+			label_trisb_3.setText("i");
+		}
+		else{
+			label_trisb_3.setText("o");
+		}
+		
+		//TrisB[4]
+		if(TrisB.trisB[4]){
+			label_trisb_4.setText("i");
+		}
+		else{
+			label_trisb_4.setText("o");
+		}
+		
+		//TrisB[5]
+		if(TrisB.trisB[5]){
+			label_trisb_5.setText("i");
+		}
+		else{
+			label_trisb_5.setText("o");
+		}
+		
+		//TrisB[6]
+		if(TrisB.trisB[6]){
+			label_trisb_6.setText("i");
+		}
+		else{
+			label_trisb_6.setText("o");
+		}
+		
+		//TrisB[7]
+		if(TrisB.trisB[7]){
+			label_trisb_7.setText("i");
+		}
+		else{
+			label_trisb_7.setText("o");
+		}
+	}
+	
+	
+	private void aktualisierePortA(){
+		//PortA Ansicht aktualisieren
+		
+		//PortA[0]
+		if(PortA.portA[0]){
+			label_pina_0.setText("1");
+		}
+		else{
+			label_pina_0.setText("0");
+		}
+		
+		//PortA[1]
+		if(PortA.portA[1]){
+			label_pina_1.setText("1");
+		}
+		else{
+			label_pina_1.setText("0");
+		}
+		
+		//PortA[2]
+		if(PortA.portA[2]){
+			label_pina_2.setText("1");
+		}
+		else{
+			label_pina_2.setText("0");
+		}
+		
+		//PortA[3]
+		if(PortA.portA[3]){
+			label_pina_3.setText("1");
+		}
+		else{
+			label_pina_3.setText("0");
+		}
+		
+		//PortA[4]
+		if(PortA.portA[4]){
+			label_pina_4.setText("1");
+		}
+		else{
+			label_pina_4.setText("0");
+		}
+		
+		//PortA[5]
+		if(PortA.portA[5]){
+			label_pina_5.setText("1");
+		}
+		else{
+			label_pina_5.setText("0");
+		}
+		
+		//PortA[6]
+		if(PortA.portA[6]){
+			label_pina_6.setText("1");
+		}
+		else{
+			label_pina_6.setText("0");
+		}
+		
+		//PortA[7]
+		if(PortA.portA[7]){
+			label_pina_7.setText("1");
+		}
+		else{
+			label_pina_7.setText("0");
+		}
+	}
+	
+	
+	private void aktualisierePortB(){
+		//PortB Ansicht aktualisieren
+		
+		//PortB[0]
+		if(PortB.portB[0]){
+			label_pinb_0.setText("1");
+		}
+		else{
+			label_pinb_0.setText("0");
+		}
+		
+		//PortB[1]
+		if(PortB.portB[1]){
+			label_pinb_1.setText("1");
+		}
+		else{
+			label_pinb_1.setText("0");
+		}
+		
+		//PortB[2]
+		if(PortB.portB[2]){
+			label_pinb_2.setText("1");
+		}
+		else{
+			label_pinb_2.setText("0");
+		}
+		
+		//PortB[3]
+		if(PortB.portB[3]){
+			label_pinb_3.setText("1");
+		}
+		else{
+			label_pinb_3.setText("0");
+		}
+		
+		//PortB[4]
+		if(PortB.portB[4]){
+			label_pinb_4.setText("1");
+		}
+		else{
+			label_pinb_4.setText("0");
+		}
+		
+		//PortB[5]
+		if(PortB.portB[5]){
+			label_pinb_5.setText("1");
+		}
+		else{
+			label_pinb_5.setText("0");
+		}
+		
+		//PortB[6]
+		if(PortB.portB[6]){
+			label_pinb_6.setText("1");
+		}
+		else{
+			label_pinb_6.setText("0");
+		}
+		
+		//PortB[7]
+		if(PortB.portB[7]){
+			label_pinb_7.setText("1");
+		}
+		else{
+			label_pinb_7.setText("0");
+		}
 	}
 }

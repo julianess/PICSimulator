@@ -128,7 +128,7 @@ public class BefehlDecoder
 	}
 
 	private void nop() {
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
@@ -164,7 +164,7 @@ public class BefehlDecoder
 		speicherZellen[f] = wRegister;
 		StatusRegister.speicherInStatus();
 		
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
@@ -173,7 +173,7 @@ public class BefehlDecoder
 		
 		StatusRegister.setZFlag(true);
 		
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
@@ -185,7 +185,7 @@ public class BefehlDecoder
 		
 		StatusRegister.setZFlag(true);
 		
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
@@ -243,7 +243,7 @@ public class BefehlDecoder
 			StatusRegister.setCarryBit(false);
 		}
 		
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
@@ -274,7 +274,7 @@ public class BefehlDecoder
 			StatusRegister.setZFlag(false);
 		}
 		
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
@@ -301,7 +301,7 @@ public class BefehlDecoder
 			StatusRegister.setZFlag(false);
 		}
 		
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
@@ -327,7 +327,7 @@ public class BefehlDecoder
 		else{
 			StatusRegister.setZFlag(false);
 		}
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
@@ -355,7 +355,7 @@ public class BefehlDecoder
 			StatusRegister.setZFlag(false);
 		}
 		
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
@@ -407,7 +407,7 @@ public class BefehlDecoder
 			StatusRegister.setZFlag(false);
 		}
 		
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
@@ -434,7 +434,7 @@ public class BefehlDecoder
 			StatusRegister.setZFlag(false);
 		}
 		
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
@@ -465,7 +465,7 @@ public class BefehlDecoder
 			StatusRegister.setZFlag(false);
 		}
 		
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
@@ -494,7 +494,7 @@ public class BefehlDecoder
 			StatusRegister.setZFlag(false);
 		}
 		
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 		
 	}
@@ -528,7 +528,7 @@ public class BefehlDecoder
 			nop();
 		}
 		
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
@@ -573,7 +573,7 @@ public class BefehlDecoder
 			StatusRegister.setCarryBit(true);
 		}
 		
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
@@ -617,7 +617,7 @@ public class BefehlDecoder
 			StatusRegister.setCarryBit(true);
 		}
 		
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
@@ -643,7 +643,7 @@ public class BefehlDecoder
 			StatusRegister.speicherInStatus();
 		}
 		
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
@@ -672,7 +672,7 @@ public class BefehlDecoder
 			nop();
 		}
 		
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
@@ -689,7 +689,7 @@ public class BefehlDecoder
 		}
 		StatusRegister.speicherInStatus();
 		
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
@@ -703,7 +703,7 @@ public class BefehlDecoder
 		}	
 		StatusRegister.speicherInStatus();
 		
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
@@ -715,7 +715,7 @@ public class BefehlDecoder
 			nop();
 		}
 		
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
@@ -728,27 +728,28 @@ public class BefehlDecoder
 		}
 		
 		StatusRegister.speicherInStatus();
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
 	private void call(short befehlcode2) {
-		short k = (short) (befehlcode2 & 255);
+		short k = (short) (befehlcode2 & 2047);
 		Stack.writeStack();
-		SingleLayoutController.programcounter = k;
+		//PC wird zusammengesetzt aus PCLATH (12-11) und k (10-0)
+		Programcounter.pcCallGoto(k);
 		SingleLayoutController.taktzyklen += 2;
 	}
 
 	private void gotoBefehl(short befehlcode2) {
 		//Richtigen PC evtl noch implementieren
-		short k = (short) (befehlcode2 & 127);
-		SingleLayoutController.programcounter = k;
+		short k = (short) (befehlcode2 & 2047);
+		Programcounter.pcCallGoto(k);
 		SingleLayoutController.taktzyklen += 2;
 	}
 
 	private void movlw(short befehlcode2) {
 		wRegister = (short) (befehlcode2 & 255);
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
@@ -775,7 +776,7 @@ public class BefehlDecoder
 			StatusRegister.setZFlag(false);
 		}
 		
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
@@ -793,7 +794,7 @@ public class BefehlDecoder
 			StatusRegister.setZFlag(false);
 		}
 		
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
@@ -811,7 +812,7 @@ public class BefehlDecoder
 			StatusRegister.setZFlag(false);
 		}
 		
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
@@ -856,7 +857,7 @@ public class BefehlDecoder
 			StatusRegister.setZFlag(false);
 		}
 		
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 
@@ -895,7 +896,7 @@ public class BefehlDecoder
 			StatusRegister.setDigitCarryBit(false);
 		}
 		
-		SingleLayoutController.programcounter ++;
+		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
 	

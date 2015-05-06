@@ -7,7 +7,7 @@ public class Intcon {
 	private static final short RBIE		= 3; //RB Port Change Interrupt Enable bit
 	private static final short INTE		= 4; //RB0/INT External Interrupt Enable bit
 	private static final short T0IE		= 5; //TMR0 Overflow Interrupt Enable bit
-	private static final short EEIE		= 6; //EE Write Complete Interrupt Enable bit
+//	private static final short EEIE		= 6; //EE Write Complete Interrupt Enable bit
 	private static final short GIE		= 7; //Global Interrupt Enable bit
 	
 	private static short intconadr = 0;

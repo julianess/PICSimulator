@@ -12,6 +12,12 @@ public class Interrupt {
 	private static short timer0Alt = 0;
 	private static short timer0Neu = 0;
 	
+	public static short taktzyklenAlt = 0;
+	public static short taktzyklenNeu = 0;
+	
+	public static short pclAlt = 0;
+	public static short pclNeu = 0;
+	
 	public static int cyclesAlt = 0;
 	
 	public static void pruefeInterrupt(){
@@ -47,12 +53,16 @@ public class Interrupt {
 		portBAlt = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB] & 240);
 		rb0intAlt = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB] & 1);
 		timer0Alt = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_TMR0] & 255);
+		taktzyklenAlt = (short) SingleLayoutController.taktzyklen;
+		pclAlt = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PCL_0] & 255);
 	}
 	
 	public static void getNeueWerte(){
 		portBNeu = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB] & 240);
 		rb0intNeu = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB] & 1);
 		timer0Neu = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_TMR0] & 255);
+		taktzyklenNeu = (short) SingleLayoutController.taktzyklen;
+		pclNeu = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PCL_0] & 255);
 		
 		//Bei Aenderung RBIF Bit setzen
 		if(portBNeu != portBAlt){
@@ -82,9 +92,12 @@ public class Interrupt {
 			}
 			else{
 				//Cycles Counter erhöhen
-				Timer0.cycles_counter ++;
+				Timer0.cycles_counter += (taktzyklenNeu - taktzyklenAlt);
 			}
 		}
+		
+		//Programcounter zusammensetzen oder PCL aktualisiseren
+		Programcounter.pcZusammensetzen();
 	}
 	
 	private static void interruptStarten(){
@@ -94,7 +107,7 @@ public class Interrupt {
 		Intcon.setGIE(false);
 		
 		cyclesAlt = SingleLayoutController.taktzyklen;
-		SingleLayoutController.programcounter = 4;
+		Programcounter.pc = 4;
 		
 		//IN RETFI ausgefuehrt:
 			//GIE Bit wieder setzen

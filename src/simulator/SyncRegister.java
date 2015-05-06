@@ -32,5 +32,16 @@ public class SyncRegister {
 			//PCLATH
 			BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PCLATH_1] = BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PCLATH_0];
 		}
-	} 
+	}
+	
+	public static void speicherInRegister(){
+		//OptionRegister Array aus Speicher laden
+		OptionRegister.speicherInOption();
+		//Timer0 aus Speicher laden
+		Timer0.speicherInTimer();
+		//TrisA Array aus Speicher laden
+		TrisA.speicherInTrisA();
+		//TrisB Array aus Speicher laden
+		TrisB.speicherInTrisB();
+	}
 }

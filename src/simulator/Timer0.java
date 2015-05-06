@@ -1,12 +1,19 @@
 package simulator;
 
+import simulator.controller.SingleLayoutController;
+import javafx.scene.shape.Cylinder;
+
 
 public class Timer0 {
 	static short timer0 = 0;
 	static short prescaler = 0;
 	static short cycles_counter = 0;
 	
+	private static boolean portRA_4Alt = false;
+	private static boolean portRA_4Neu = false;
+	
 	public static void berechneTimer0(){
+		
 		//Pruefen, ob prescaler sich auf Timer0 bezieht und wenn ja, die Berechnung durchfuehren
 		if(!OptionRegister.getPSA()){
 			//PS2
@@ -16,33 +23,87 @@ public class Timer0 {
 			else{
 				prescaler = 0;
 			}
+			//PS1
 			if(OptionRegister.getPS1()){
 				prescaler += 2;
 			}
+			//PS0
 			if(OptionRegister.getPS0()){
 				prescaler += 1;
 			}
 			prescaler = (short) Math.pow(2, (prescaler+1));
 		}
+		//PSA gesetzt -> Prescaler gehoert zum Watchdog -> Kein Prescaler fuer Timer0
 		else{
 			prescaler = 1;
 		}
-			
-		System.out.println("Prescaler: " + prescaler);
-		//Timer 0 erhoehen, wenn Prescaler erreicht
-		//Counter muss nicht exakt Prescaler sein (doppelte Cyclen)
-		if(cycles_counter >= prescaler){
-			if(timer0 >= 255){
-				timer0 = (short) (timer0 - 255);
-				Intcon.setT0IF(true);
+		
+		
+		//Clock Source: Instrucition Cyrcles
+		if(!OptionRegister.getT0CS()){
+			//Timer 0 erhoehen, wenn Prescaler erreicht
+			//Counter muss nicht exakt Prescaler sein (doppelte Zyclen)
+			if(cycles_counter >= prescaler){
+				if(timer0 >= 255){
+					timer0 = (short) (timer0 - 255);
+					Intcon.setT0IF(true);
+				}
+				else{
+					timer0 ++;
+				}
+				//Counter zuruecksetzen
+				cycles_counter -= prescaler;
+				//Timer0 an seine Speicheradresse schreiben
+				timerInSpeicher();
 			}
-			else{
-				timer0 ++;
+		}
+		
+		//Externer Takt RA4
+		else{
+			portRA_4Neu = getRA4();
+			//Steigende Flanke: T0SE nicht gesetzt
+			if(portRA_4Neu && !portRA_4Alt && !OptionRegister.getT0SE()){
+				
+				//Timer 0 erhoehen, wenn Prescaler erreicht
+				//Counter muss nicht exakt Prescaler sein (doppelte Zyclen)
+				if(cycles_counter >= prescaler){
+					if(timer0 >= 255){
+						//timer0 zuruecksetzen
+						timer0 = (short) (timer0 - 255);
+						//Timer0 Interrupt Flag setzen
+						Intcon.setT0IF(true);
+					}
+					else{
+						//timer0 erhoehen
+						timer0 ++;
+					}
+					//Counter zuruecksetzen
+					cycles_counter -= prescaler;
+					//Timer0 an seine Speicheradresse schreiben
+					timerInSpeicher();
+				}
 			}
-			//Counter zuruecksetzen
-			cycles_counter -= prescaler;
-			//Timer0 an seine Speicheradresse schreiben
-			timerInSpeicher();
+			//fallende Flanke
+			else if(!portRA_4Neu && portRA_4Alt && OptionRegister.getT0SE()){
+				if(cycles_counter >= prescaler){
+					if(timer0 >= 255){
+						//timer0 zuruecksetzen
+						timer0 = (short) (timer0 - 255);
+						//Timer0 Interrupt Flag setzen
+						Intcon.setT0IF(true);
+					}
+					else{
+						//timer0 erhoehen
+						timer0 ++;
+					}
+					//Counter zuruecksetzen
+					cycles_counter -= prescaler;
+					//Timer0 an seine Speicheradresse schreiben
+					timerInSpeicher();
+				}
+			}
+			//Alten Wert aktualisieren
+			portRA_4Alt = portRA_4Neu;
 		}
 	}
 	
@@ -56,5 +117,15 @@ public class Timer0 {
 	public static void speicherInTimer(){
 		//Timer aus 0x1 holen
 		timer0 = BefehlDecoder.speicherZellen[RegisterAdressen.ADR_TMR0];
+	}
+	
+	public static boolean getRA4(){
+		if((BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTA] & 16) == 1){
+			return true;
+		}
+		else{
+			return false;
+		}
+		
 	}
 }
