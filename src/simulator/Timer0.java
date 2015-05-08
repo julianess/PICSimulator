@@ -1,8 +1,5 @@
 package simulator;
 
-import simulator.controller.SingleLayoutController;
-import javafx.scene.shape.Cylinder;
-
 
 public class Timer0 {
 	static short timer0 = 0;
@@ -41,6 +38,7 @@ public class Timer0 {
 		
 		//Clock Source: Instrucition Cyrcles
 		if(!OptionRegister.getT0CS()){
+			System.out.println("T0CS nicht gesetzt");
 			//Timer 0 erhoehen, wenn Prescaler erreicht
 			//Counter muss nicht exakt Prescaler sein (doppelte Zyclen)
 			if(cycles_counter >= prescaler){
@@ -60,10 +58,14 @@ public class Timer0 {
 		
 		//Externer Takt RA4
 		else{
+			System.out.println("Timer0 durch RA4!");
+			
 			portRA_4Neu = getRA4();
 			//Steigende Flanke: T0SE nicht gesetzt
 			if(portRA_4Neu && !portRA_4Alt && !OptionRegister.getT0SE()){
-				
+				System.out.println("steigende Flanke!");
+				//Cycles Counter erhoehen
+				cycles_counter ++;
 				//Timer 0 erhoehen, wenn Prescaler erreicht
 				//Counter muss nicht exakt Prescaler sein (doppelte Zyclen)
 				if(cycles_counter >= prescaler){
@@ -85,6 +87,9 @@ public class Timer0 {
 			}
 			//fallende Flanke
 			else if(!portRA_4Neu && portRA_4Alt && OptionRegister.getT0SE()){
+				System.out.println("fallende flanke!");
+				//Cycles Counter erhoehen
+				cycles_counter ++;
 				if(cycles_counter >= prescaler){
 					if(timer0 >= 255){
 						//timer0 zuruecksetzen
@@ -95,6 +100,7 @@ public class Timer0 {
 					else{
 						//timer0 erhoehen
 						timer0 ++;
+						System.out.println("T0 erhoeht!");
 					}
 					//Counter zuruecksetzen
 					cycles_counter -= prescaler;
@@ -102,6 +108,10 @@ public class Timer0 {
 					timerInSpeicher();
 				}
 			}
+			System.out.println("cycles_counter: " + cycles_counter);
+			System.out.println("Prescaler: " + prescaler);
+			System.out.println("Alt: " + portRA_4Alt);
+			System.out.println("Neu: " + portRA_4Neu);
 			//Alten Wert aktualisieren
 			portRA_4Alt = portRA_4Neu;
 		}
@@ -120,7 +130,7 @@ public class Timer0 {
 	}
 	
 	public static boolean getRA4(){
-		if((BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTA] & 16) == 1){
+		if((BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTA] & 16) != 0){
 			return true;
 		}
 		else{

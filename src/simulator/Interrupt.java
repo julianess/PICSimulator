@@ -91,8 +91,10 @@ public class Interrupt {
 				Timer0.speicherInTimer();
 			}
 			else{
-				//Cycles Counter erhöhen
-				Timer0.cycles_counter += (taktzyklenNeu - taktzyklenAlt);
+				if(!OptionRegister.getT0CS()){
+					//Cycles Counter erhöhen
+					Timer0.cycles_counter += (taktzyklenNeu - taktzyklenAlt);
+				}
 			}
 		}
 		
