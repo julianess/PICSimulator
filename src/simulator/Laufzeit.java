@@ -1,8 +1,8 @@
 package simulator;
 
-import java.text.DecimalFormat;
+//Diese Klasse importiert die Laufzeitberechnung entsprechend der eingestellten Quarzfrequenz
 
-//Klasse fuer alles, was die Laufzeit betrifft
+import java.text.DecimalFormat;
 
 public class Laufzeit {
 	public static double quarzfrequenz = 0; //Quarzfrequenz

@@ -1,5 +1,12 @@
 package simulator;
 
+//Diese Klasse implementiert das INTCON Register des PIC
+
+//Voraussetzung fuer einen Interrupt:
+//Allgemein:- GIE muss vom Programmierer gesetzt sein
+//Speziell: - Spezielles Interupt Enable Flag muss vom Programmierer gesetzt sein (z.B T0IE)
+//			- Interrupt Flag (z.B T0IF) muss durch die Interruptbedingung gesetzt werden
+
 public class Intcon {
 	private static final short RBIF 	= 0; //RB Port Change Interrupt Flag bit
 	private static final short INTF 	= 1; //RB0/INT External Interrupt Flag bit

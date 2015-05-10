@@ -1,11 +1,17 @@
 package simulator;
 
+//Diese Klasse implementiert den Timer0
+// - Timer0 berechnen (intern/extern)
+// - Prescaler
+// - Timer0 aus seiner Speicheradresse laden
+// - Timer0 an seine Speicheradresse schreiben
 
 public class Timer0 {
-	static short timer0 = 0;
-	static short prescaler = 0;
-	static short cycles_counter = 0;
+	static short timer0 = 0; //Wert des Timer0
+	static short prescaler = 0; //Wert des Prescalers
+	static short cycles_counter = 0; //Zaehler der relevanten Prescaler Cycles
 	
+	//RA4 Variablen fuer den Vergleich (Timer0 abhaengig von RA4-Flanken)
 	private static boolean portRA_4Alt = false;
 	private static boolean portRA_4Neu = false;
 	
@@ -38,7 +44,6 @@ public class Timer0 {
 		
 		//Clock Source: Instrucition Cyrcles
 		if(!OptionRegister.getT0CS()){
-			System.out.println("T0CS nicht gesetzt");
 			//Timer 0 erhoehen, wenn Prescaler erreicht
 			//Counter muss nicht exakt Prescaler sein (doppelte Zyclen)
 			if(cycles_counter >= prescaler){
@@ -58,12 +63,9 @@ public class Timer0 {
 		
 		//Externer Takt RA4
 		else{
-			System.out.println("Timer0 durch RA4!");
-			
 			portRA_4Neu = getRA4();
 			//Steigende Flanke: T0SE nicht gesetzt
 			if(portRA_4Neu && !portRA_4Alt && !OptionRegister.getT0SE()){
-				System.out.println("steigende Flanke!");
 				//Cycles Counter erhoehen
 				cycles_counter ++;
 				//Timer 0 erhoehen, wenn Prescaler erreicht
@@ -87,7 +89,6 @@ public class Timer0 {
 			}
 			//fallende Flanke
 			else if(!portRA_4Neu && portRA_4Alt && OptionRegister.getT0SE()){
-				System.out.println("fallende flanke!");
 				//Cycles Counter erhoehen
 				cycles_counter ++;
 				if(cycles_counter >= prescaler){
@@ -100,7 +101,6 @@ public class Timer0 {
 					else{
 						//timer0 erhoehen
 						timer0 ++;
-						System.out.println("T0 erhoeht!");
 					}
 					//Counter zuruecksetzen
 					cycles_counter -= prescaler;
@@ -108,10 +108,6 @@ public class Timer0 {
 					timerInSpeicher();
 				}
 			}
-			System.out.println("cycles_counter: " + cycles_counter);
-			System.out.println("Prescaler: " + prescaler);
-			System.out.println("Alt: " + portRA_4Alt);
-			System.out.println("Neu: " + portRA_4Neu);
 			//Alten Wert aktualisieren
 			portRA_4Alt = portRA_4Neu;
 		}

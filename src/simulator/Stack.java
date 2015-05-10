@@ -1,6 +1,9 @@
 package simulator;
 
-import simulator.controller.SingleLayoutController;
+//Diese Klasse implementiert den Programcounter Stack
+// - Wert in Stack ablegen und Stackpointer anpassen
+// - Wert aus Stack entnehmen und Stackpointer anpassen
+// - Clear Stack
 
 public class Stack {
 

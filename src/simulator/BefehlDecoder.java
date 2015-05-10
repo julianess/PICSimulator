@@ -1,5 +1,9 @@
 package simulator;
 
+//Diese Klasse bildet den Befehl Decoder.
+//Ueber die Angaben aus dem Datenblatt des PIC wird der Befehlcode maskiert
+//Die ggf. im Befehlcode beinhalteten Variablen werden ebenfalls maskiert und im Befehl verwendet
+
 import simulator.controller.SingleLayoutController;
 
 public class BefehlDecoder
@@ -7,6 +11,8 @@ public class BefehlDecoder
 	private static final short FSR = 4;
 	private short befehlcode;
 	public static short wRegister;
+	
+	//Gesamte Speichertabelle wird als Array dargestellt
 	public static short[] speicherZellen = new short[256];
 	
 	public BefehlDecoder (){} //leerer Konstruktor
@@ -19,6 +25,7 @@ public class BefehlDecoder
 		this.befehlcode = befehlcode;
 	}
 	
+	//Anhand der Bitmaske wird zunaechst lediglich ermittelt um welchen Befehl es sich handelt
 	public void decode(short befehlcode)
 	{
 		short befehl = 0;
@@ -127,6 +134,9 @@ public class BefehlDecoder
 			nop();
 	}
 
+	//Hier beginnen die einzelnen Befehle des PIC
+	//Je nach Angaben aus dem Datenblatt des PIC werden Programcounter und Taktzyklen berechnet.
+	
 	private void nop() {
 		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;

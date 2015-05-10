@@ -1,5 +1,11 @@
 package simulator;
 
+//Diese Klasse implementiert das Option Register
+//- OptionRegister Array in einen Integer Wert umwandeln
+//- Wert des OptionRegister Arrays nach Integer-Umwandlung an Adresse 0x81 schreiben
+//- Integer Wert aus Adresse 0x81 in OptionRegister Array umwandeln
+//- Getter und Setter der Register-Bits
+
 public class OptionRegister {
 	private static final short PS0 = 0;
 	private static final short PS1 = 1;
@@ -13,7 +19,7 @@ public class OptionRegister {
 	public static OptionRegister instance = null;
 	private static boolean[] register = new boolean[8];
 	
-	//Wert des Registers als short zurueckgeben
+	//OptionRegister Array in einen Integer Wert umwandeln
 	public static short registerToInt(){
 		short result = 0;
 		
@@ -25,13 +31,13 @@ public class OptionRegister {
 		return result;
 	}
 	
-	//Wert des Registers in seinen Speicher schreiben
+	//Wert des OptionRegister Arrays nach Integer-Umwandlung an Adresse 0x81 schreiben
 	public static void optionInSpeicher(){
 		//Option Register in 0x81 speichern
 		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_OPTIONREG] = registerToInt();
 	}
 	
-	//Speicher in Option Register Array schreiben
+	//Integer Wert aus Adresse 0x81 in OptionRegister Array umwandeln
 	public static void speicherInOption(){
 		short wert = BefehlDecoder.speicherZellen[RegisterAdressen.ADR_OPTIONREG];
 		

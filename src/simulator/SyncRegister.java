@@ -1,6 +1,7 @@
 package simulator;
 
 //Klasse fuer die Synchronisierung der "doppelt vorhandenen" Register
+
 public class SyncRegister {
 	
 	//Register zwischen Bank 0 und Bank 1 synchronisieren

@@ -1,5 +1,10 @@
 package simulator;
 
+//Diese Klasse implementiert den Programmcounter
+// - PCL
+// - PCLATH
+// - Verhalten bei Call und Goto
+
 public class Programcounter {
 	public static int pc = 0;
 	public static short pcl = 0;

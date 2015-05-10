@@ -1,5 +1,7 @@
 package simulator;
 
+//Diese Klasse implementiert das Status Register
+
 public class StatusRegister {
 	private static final short C 	= 0; //Carry
 	private static final short DC 	= 1; //Digit Carry

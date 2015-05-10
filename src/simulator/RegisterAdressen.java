@@ -1,6 +1,7 @@
 package simulator;
 
-//Klasse fuer die Zuordnung der speziellen Registe rzu ihrer Adresse in der Speichertabelle
+//Klasse fuer die Zuordnung der speziellen Register zu ihrer Adresse in der Speichertabelle
+
 public class RegisterAdressen {
 	public static final short ADR_TMR0		= 1;	//Timer 0
 	

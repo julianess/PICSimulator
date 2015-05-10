@@ -1,25 +1,38 @@
 package simulator;
 
+//Diese Klasse implementiert die Interrupt Funktionen des PIC
+
 import simulator.controller.SingleLayoutController;
 
 public class Interrupt {
+	
+	//Variablen zum pruefen verschiedener Bestandteile auf eine Aenderung
+	
+	//PortB
 	private static short portBAlt = 0;
 	private static short portBNeu = 0;
 	
+	//RB0
 	private static short rb0intAlt = 0;
 	private static short rb0intNeu = 0;
 	
+	//Timer0
 	private static short timer0Alt = 0;
 	private static short timer0Neu = 0;
 	
+	//Taktzyklen
 	public static short taktzyklenAlt = 0;
 	public static short taktzyklenNeu = 0;
 	
+	//PCL
 	public static short pclAlt = 0;
 	public static short pclNeu = 0;
 	
+	
+	//Speichert die Taktzyklen zum Zeitpunkt eines Interrupts (nach Interrupt +2)
 	public static int cyclesAlt = 0;
 	
+	//Auf alle Interrupts pruefen
 	public static void pruefeInterrupt(){
 		//Nur Interrupt moeglich, wenn GIE Bit gesetzt
 		if(Intcon.getGIE()){
@@ -49,6 +62,7 @@ public class Interrupt {
 		}
 	}
 	
+	//Alte Werte der verschiedenen Faktoren fuer einen spaeteren Vergleich erhalten
 	public static void getAlteWerte(){
 		portBAlt = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB] & 240);
 		rb0intAlt = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB] & 1);
@@ -57,6 +71,7 @@ public class Interrupt {
 		pclAlt = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PCL_0] & 255);
 	}
 	
+	//Neue Werte verschiedener Faktoren fuer den Vergleich erhalten und Vergleich durchfuehren
 	public static void getNeueWerte(){
 		portBNeu = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB] & 240);
 		rb0intNeu = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB] & 1);
@@ -102,6 +117,7 @@ public class Interrupt {
 		Programcounter.pcZusammensetzen();
 	}
 	
+	//Startet die Interrupt-Routine
 	private static void interruptStarten(){
 		//Ruecksprungadresse sichern
 		Stack.writeStack();
