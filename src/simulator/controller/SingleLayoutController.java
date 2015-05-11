@@ -1406,7 +1406,7 @@ public class SingleLayoutController {
 		
 		if(choice_hardware.getValue() != null){
 			try {
-				comport.connect(choice_hardware.getValue().toString());
+				comport.verbindeComport(choice_hardware.getValue().toString());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -1418,10 +1418,10 @@ public class SingleLayoutController {
 	}
 	
 	private void comportCommunication(){
-		comport.updatePortA(BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTA]);
-		comport.updatePortB(BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB]);
-		comport.updateTrisA(BefehlDecoder.speicherZellen[RegisterAdressen.ADR_TRISA]);
-		comport.updateTrisB(BefehlDecoder.speicherZellen[RegisterAdressen.ADR_TRISB]);
+		comport.portAtoHardware(BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTA]);
+		comport.portBtoHardware(BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB]);
+		comport.trisAtoHardware(BefehlDecoder.speicherZellen[RegisterAdressen.ADR_TRISA]);
+		comport.trisBtoHardware(BefehlDecoder.speicherZellen[RegisterAdressen.ADR_TRISB]);
 		
 		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTA] = (short) comport.getInputPortA();
 		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB] = (short) comport.getInputPortB();

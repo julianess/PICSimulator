@@ -76,6 +76,10 @@ public class Interrupt {
 		taktzyklenNeu = (short) SingleLayoutController.taktzyklen;
 		pclNeu = (short) (BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PCL_0] & 255);
 		
+		System.out.println("GIE: " + Intcon.getGIE());
+		System.out.println("T0IE: " + Intcon.getT0IE());
+		System.out.println("Prescaler: " + Watchdog.prescaler_watchdog);
+		
 		//Bei Aenderung RBIF Bit setzen
 		if(portBNeu != portBAlt){
 			Intcon.setRBIF(true);
@@ -84,7 +88,6 @@ public class Interrupt {
 		//Bei Aenderung des rb0/int pruefen, ob steigende oder fallende Flanke
 		if(rb0intNeu != rb0intAlt){
 			
-			System.out.println("RB0!!!");
 			//Steigende Flanke
 			if((rb0intNeu > rb0intAlt) && OptionRegister.getINTEDG()){
 				Intcon.setINTF(true);

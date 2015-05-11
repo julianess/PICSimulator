@@ -4,7 +4,7 @@ import simulator.controller.SingleLayoutController;
 
 public class Watchdog {
 	
-	private static short prescaler_watchdog = 0; //Wert des Prescalers
+	public static short prescaler_watchdog = 0; //Wert des Prescalers
 	public static double watchdog = 0;
 	
 	public static void berechneWatchdog(){
