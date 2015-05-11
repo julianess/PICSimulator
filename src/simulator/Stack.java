@@ -19,11 +19,11 @@ public class Stack {
 	public static void getStack()
 	{
 		stack_pointer--;
-		Programcounter.pc = stack[stack_pointer];
 		if(stack_pointer < 0)
 		{
 			stack_pointer = 7;
 		}
+		Programcounter.pc = stack[stack_pointer];
 	}
 	
 	public static void clearStack(){

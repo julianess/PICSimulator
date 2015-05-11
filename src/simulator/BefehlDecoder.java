@@ -168,7 +168,7 @@ public class BefehlDecoder
 		StatusRegister.setTO(true);
 		StatusRegister.setPD(true);
 		
-		Watchdog.watchdog = 0;
+	//	Watchdog.watchdog = 0;
 	}
 
 	private void movwf(short befehlcode2) {

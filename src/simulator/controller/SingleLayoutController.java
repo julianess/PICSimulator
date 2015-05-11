@@ -9,6 +9,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+
+
 import simulator.BefehlDecoder;
 import simulator.Interrupt;
 import simulator.Laufzeit;
@@ -53,6 +55,8 @@ public class SingleLayoutController {
 	public static boolean schritt = false;
 	private boolean ersterStart = true;
 	public static boolean WDTReset = false;
+	public SeriellerPort comport;
+	public boolean comportSelected = false;
 	
 	private Thread t = null;
 
@@ -448,11 +452,23 @@ public class SingleLayoutController {
 		//Quarzfrequenz lesen
 		getQuarzFrequenz();
 		
-		//ComPort lesen
-		getComPortsChoice();
-		
 		if (t == null) {
 			powerOnReset();
+			//Comport Verbinden
+			connectCOM();
+			//Thread fuer Hardwareansteuerung
+			Runnable comportTask = new Runnable() {
+				
+				@Override
+				public void run() {
+					while(true){
+						//Hardwareansteuerung aktualisiseren
+						comportCommunication();
+						}
+				}
+			};
+			Thread hardware = new Thread(comportTask);
+			
 			// Task um die UI Funktionalität nicht zu blockieren
 			Runnable task = new Runnable() {
 				@Override
@@ -492,6 +508,7 @@ public class SingleLayoutController {
 							}
 						});
 						
+						
 						//Felder in der GUI aktualisieren
 						Platform.runLater(new Runnable() {
 							
@@ -528,7 +545,7 @@ public class SingleLayoutController {
 						decoder.decode(test);
 						
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
@@ -579,6 +596,9 @@ public class SingleLayoutController {
 			};
 			t = new Thread(task);
 			t.start();
+			if(choice_hardware.getValue() != null){
+				hardware.start();
+			}
 		}
 		else {
 			Alert alert = new Alert(AlertType.ERROR);
@@ -603,6 +623,9 @@ public class SingleLayoutController {
 			t = null;
 			Programcounter.pc = 0;
 			pause = false;
+			if(choice_hardware.getValue() != null){
+				comport.close();
+			}
 		}
 		else {
 			Alert alert = new Alert(AlertType.ERROR);
@@ -1038,17 +1061,6 @@ public class SingleLayoutController {
 		Laufzeit.quarzfrequenz = Double.parseDouble(((String) (choice_quarzfrequenz.getValue())).substring(0, 8));
 	}
 	
-	@FXML
-	public void getComPortsChoice(){
-		
-		String comPort;
-		
-		comPort = (String) choice_hardware.getValue();
-		
-		//TODO: Hardwareansteuerung!
-		
-	}
-	
 	private void aktualisiereStackGUI(){
 		
 		stack_0.setText(Integer.toHexString(Stack.stack[0]).toUpperCase());
@@ -1387,5 +1399,34 @@ public class SingleLayoutController {
 		else{
 			label_pinb_7.setText("0");
 		}
+	}
+	
+	private void connectCOM(){
+		comport = new SeriellerPort(); //Objekt der Klasse SeriellerPort erzeugen
+		
+		if(choice_hardware.getValue() != null){
+			try {
+				comport.connect(choice_hardware.getValue().toString());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			comportSelected = true;
+		}
+		else{
+			comportSelected = false;
+		}
+	}
+	
+	private void comportCommunication(){
+		comport.updatePortA(BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTA]);
+		comport.updatePortB(BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB]);
+		comport.updateTrisA(BefehlDecoder.speicherZellen[RegisterAdressen.ADR_TRISA]);
+		comport.updateTrisB(BefehlDecoder.speicherZellen[RegisterAdressen.ADR_TRISB]);
+		
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTA] = (short) comport.getInputPortA();
+		BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTB] = (short) comport.getInputPortB();
+		
+		PortA.setPortA();
+		PortB.setPortB();
 	}
 }

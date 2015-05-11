@@ -48,6 +48,7 @@ public class SeriellerPort {
 	     */
 	    public void connect(String portName) throws Exception {
 	        CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(portName);
+	        //Pruefen, ob Port bereits verwendet wird
 	        if (portIdentifier.isCurrentlyOwned()) {
 	            System.out.println("Error: Port is currently in use");
 	        } else {

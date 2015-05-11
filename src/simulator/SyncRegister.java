@@ -44,5 +44,7 @@ public class SyncRegister {
 		TrisA.speicherInTrisA();
 		//TrisB Array aus Speicher laden
 		TrisB.speicherInTrisB();
+		//INTCON Array aus Speicher laden
+		Intcon.speicherInIntcon();
 	}
 }

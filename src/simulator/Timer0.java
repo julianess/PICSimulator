@@ -41,9 +41,9 @@ public class Timer0 {
 			prescaler_timer0 = 1;
 		}
 		
-		
 		//Clock Source: Instrucition Cyrcles
 		if(!OptionRegister.getT0CS()){
+			
 			//Timer 0 erhoehen, wenn Prescaler erreicht
 			//Counter muss nicht exakt Prescaler sein (doppelte Zyclen)
 			if(cycles_counter >= prescaler_timer0){

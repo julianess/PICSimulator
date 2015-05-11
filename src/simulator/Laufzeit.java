@@ -10,11 +10,9 @@ public class Laufzeit {
 	public static String einheit = ""; //Erhaelt die Einheit von der Auswahl
 	public static String laufzeit_string = ""; //String fuer die Ausgabe der Laufzeit
 	
-	private static double divisor = 0; //Divisor fuer die Laufzeitberechnung
-	
+	public static double divisor = 0; //Divisor fuer Laufzeitberechnung und Watchdog Berechnung
 	//Laufzeit berechnen und in einen Ausgabestring formatieren
 	public static void berechneLaufzeit(){
-		
 		//Einheit ermitteln und Divisor fuer die Laufzeitberechnung berechnen
 		if(einheit.equals("kHz")){
 			divisor = quarzfrequenz * Math.pow(10,3);
@@ -28,7 +26,7 @@ public class Laufzeit {
 			laufzeit = 0;
 		}
 		else{
-			laufzeit += ((Interrupt.taktzyklenNeu - Interrupt.taktzyklenAlt)/divisor);
+			laufzeit += ((Interrupt.taktzyklenNeu - Interrupt.taktzyklenAlt)*4/divisor);
 		}
 		
 		//Formatiere die Laufzeit auf fix 10 Nachkommastellen

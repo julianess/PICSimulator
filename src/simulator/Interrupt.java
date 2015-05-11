@@ -39,7 +39,6 @@ public class Interrupt {
 			//Timer 0 Interrupt moeglich, wenn T0IE Bit gesetzt
 			if(Intcon.getT0IE()){
 				if(Intcon.getT0IF()){
-					System.out.println("Timer 0 Interrupt!");
 					interruptStarten();
 				}
 			}
@@ -47,7 +46,6 @@ public class Interrupt {
 			//RB Interrupt
 			if(Intcon.getRBIE()){
 				if(Intcon.getRBIF()){
-					System.out.println("RB changed Interrupt!");
 					interruptStarten();
 				}
 			}
@@ -55,7 +53,6 @@ public class Interrupt {
 			//RB0/INT
 			if(Intcon.getINTE()){
 				if(Intcon.getINTF()){
-					System.out.println("RB0INT Interrupt");
 					interruptStarten();
 				}
 			}
@@ -86,6 +83,8 @@ public class Interrupt {
 		
 		//Bei Aenderung des rb0/int pruefen, ob steigende oder fallende Flanke
 		if(rb0intNeu != rb0intAlt){
+			
+			System.out.println("RB0!!!");
 			//Steigende Flanke
 			if((rb0intNeu > rb0intAlt) && OptionRegister.getINTEDG()){
 				Intcon.setINTF(true);
@@ -105,12 +104,10 @@ public class Interrupt {
 				//Timer0 aus Speicher lesen
 				Timer0.speicherInTimer();
 			}
-			else{
-				if(!OptionRegister.getT0CS()){
-					//Cycles Counter erhöhen
-					Timer0.cycles_counter += (taktzyklenNeu - taktzyklenAlt);
-				}
-			}
+		}
+		if(!OptionRegister.getT0CS()){
+			//Cycles Counter erhöhen
+			Timer0.cycles_counter += (taktzyklenNeu - taktzyklenAlt);
 		}
 		
 		//Programcounter zusammensetzen oder PCL aktualisiseren
@@ -118,7 +115,7 @@ public class Interrupt {
 	}
 	
 	//Startet die Interrupt-Routine
-	public static void interruptStarten(){
+	private static void interruptStarten(){
 		//Ruecksprungadresse sichern
 		Stack.writeStack();
 		//GIE Bit clear
