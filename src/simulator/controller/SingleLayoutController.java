@@ -24,6 +24,7 @@ import simulator.TrisA;
 import simulator.TrisB;
 import simulator.ValueClass;
 import simulator.ValueClassSpeicher;
+import simulator.Watchdog;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -51,6 +52,7 @@ public class SingleLayoutController {
 	public static boolean pause = false;
 	public static boolean schritt = false;
 	private boolean ersterStart = true;
+	public static boolean WDTReset = false;
 	
 	private Thread t = null;
 
@@ -550,6 +552,21 @@ public class SingleLayoutController {
 						
 						//Timer0 berechnen
 						Timer0.berechneTimer0();
+						
+						//Watchdogtimer berechnen
+						Watchdog.berechneWatchdog();
+						
+						//Watchdog Reset						
+						if(WDTReset){
+							Platform.runLater(new Runnable() {
+								
+								@Override
+								public void run() {
+									WDTReset = false;
+									powerOnReset();
+								}
+							});
+						}
 					}
 					
 					//Programmende
@@ -853,10 +870,17 @@ public class SingleLayoutController {
 		PortB.setPortB();
 	}
 	
-	private void powerOnReset(){
+	public void powerOnReset(){
 		Programcounter.pc = 0;
 		Programcounter.pcl = 0;
 		Programcounter.pclath = 0;
+		Watchdog.watchdog = 0;
+		
+		Interrupt.pclAlt = 0;
+		Interrupt.pclNeu = 0;
+		Interrupt.cyclesAlt = 0;
+		Interrupt.taktzyklenAlt = 0;
+		Interrupt.taktzyklenNeu = 0;
 		
 		taktzyklen = 0;
 		Laufzeit.laufzeit = 0;

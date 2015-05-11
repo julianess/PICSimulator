@@ -8,7 +8,7 @@ package simulator;
 
 public class Timer0 {
 	static short timer0 = 0; //Wert des Timer0
-	static short prescaler = 0; //Wert des Prescalers
+	static short prescaler_timer0 = 0; //Wert des Prescalers
 	static short cycles_counter = 0; //Zaehler der relevanten Prescaler Cycles
 	
 	//RA4 Variablen fuer den Vergleich (Timer0 abhaengig von RA4-Flanken)
@@ -21,24 +21,24 @@ public class Timer0 {
 		if(!OptionRegister.getPSA()){
 			//PS2
 			if(OptionRegister.getPS2()){
-				prescaler = 4;
+				prescaler_timer0 = 4;
 			}
 			else{
-				prescaler = 0;
+				prescaler_timer0 = 0;
 			}
 			//PS1
 			if(OptionRegister.getPS1()){
-				prescaler += 2;
+				prescaler_timer0 += 2;
 			}
 			//PS0
 			if(OptionRegister.getPS0()){
-				prescaler += 1;
+				prescaler_timer0 += 1;
 			}
-			prescaler = (short) Math.pow(2, (prescaler+1));
+			prescaler_timer0 = (short) Math.pow(2, (prescaler_timer0+1));
 		}
 		//PSA gesetzt -> Prescaler gehoert zum Watchdog -> Kein Prescaler fuer Timer0
 		else{
-			prescaler = 1;
+			prescaler_timer0 = 1;
 		}
 		
 		
@@ -46,7 +46,7 @@ public class Timer0 {
 		if(!OptionRegister.getT0CS()){
 			//Timer 0 erhoehen, wenn Prescaler erreicht
 			//Counter muss nicht exakt Prescaler sein (doppelte Zyclen)
-			if(cycles_counter >= prescaler){
+			if(cycles_counter >= prescaler_timer0){
 				if(timer0 >= 255){
 					timer0 = (short) (timer0 - 255);
 					Intcon.setT0IF(true);
@@ -55,7 +55,7 @@ public class Timer0 {
 					timer0 ++;
 				}
 				//Counter zuruecksetzen
-				cycles_counter -= prescaler;
+				cycles_counter -= prescaler_timer0;
 				//Timer0 an seine Speicheradresse schreiben
 				timerInSpeicher();
 			}
@@ -70,7 +70,7 @@ public class Timer0 {
 				cycles_counter ++;
 				//Timer 0 erhoehen, wenn Prescaler erreicht
 				//Counter muss nicht exakt Prescaler sein (doppelte Zyclen)
-				if(cycles_counter >= prescaler){
+				if(cycles_counter >= prescaler_timer0){
 					if(timer0 >= 255){
 						//timer0 zuruecksetzen
 						timer0 = (short) (timer0 - 255);
@@ -82,7 +82,7 @@ public class Timer0 {
 						timer0 ++;
 					}
 					//Counter zuruecksetzen
-					cycles_counter -= prescaler;
+					cycles_counter -= prescaler_timer0;
 					//Timer0 an seine Speicheradresse schreiben
 					timerInSpeicher();
 				}
@@ -91,7 +91,7 @@ public class Timer0 {
 			else if(!portRA_4Neu && portRA_4Alt && OptionRegister.getT0SE()){
 				//Cycles Counter erhoehen
 				cycles_counter ++;
-				if(cycles_counter >= prescaler){
+				if(cycles_counter >= prescaler_timer0){
 					if(timer0 >= 255){
 						//timer0 zuruecksetzen
 						timer0 = (short) (timer0 - 255);
@@ -103,7 +103,7 @@ public class Timer0 {
 						timer0 ++;
 					}
 					//Counter zuruecksetzen
-					cycles_counter -= prescaler;
+					cycles_counter -= prescaler_timer0;
 					//Timer0 an seine Speicheradresse schreiben
 					timerInSpeicher();
 				}

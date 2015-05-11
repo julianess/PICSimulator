@@ -165,8 +165,10 @@ public class BefehlDecoder
 	}
 
 	private void clrwdt() {
-		// TODO Auto-generated method stub
+		StatusRegister.setTO(true);
+		StatusRegister.setPD(true);
 		
+		Watchdog.watchdog = 0;
 	}
 
 	private void movwf(short befehlcode2) {
@@ -189,7 +191,6 @@ public class BefehlDecoder
 
 	private void clrf(short befehlcode2) {
 		short f = maskiereAdresse(befehlcode2); //(short) (befehlcode2 & 127);
-		
 		speicherZellen[f] = 0;
 		StatusRegister.speicherInStatus();
 		

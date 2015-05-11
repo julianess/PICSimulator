@@ -118,7 +118,7 @@ public class Interrupt {
 	}
 	
 	//Startet die Interrupt-Routine
-	private static void interruptStarten(){
+	public static void interruptStarten(){
 		//Ruecksprungadresse sichern
 		Stack.writeStack();
 		//GIE Bit clear

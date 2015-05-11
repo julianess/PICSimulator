@@ -13,6 +13,16 @@ public class StatusRegister {
 	//Array fuer Register
 	private static boolean[] register = new boolean[8];
 	
+	public static void setPD(boolean status){
+		register[PD] = status;
+		statusInSpeicher(); //Status Register Array in die Speichertabelle schreiben
+	}
+	
+	public static void setTO(boolean status){
+		register[TO] = status;
+		statusInSpeicher(); //Status Register Array in die Speichertabelle schreiben
+	}
+	
 	//TODO: In RESET outsourcen!!!!! Bzg. RESET aufrufen	
 	{register[RP0] = false;}
 	public StatusRegister(){
