@@ -1,11 +1,14 @@
 package simulator;
 
+import java.text.DecimalFormat;
+
 import simulator.controller.SingleLayoutController;
 
 public class Watchdog {
 	
 	public static short prescaler_watchdog = 0; //Wert des Prescalers
 	public static double watchdog = 0;
+	public static String watchdog_string = "";
 	
 	public static void berechneWatchdog(){
 		
@@ -50,5 +53,9 @@ public class Watchdog {
 			StatusRegister.setTO(false);
 			SingleLayoutController.WDTReset = true;
 		}
+		
+		//Formatiere Watchdog auf fix 10 Nachkommastellen (nur fuer die Anzeige)
+		DecimalFormat df_laufzeit = new DecimalFormat("0.00000000");
+		watchdog_string = df_laufzeit.format(watchdog) + " s";
 	}
 }

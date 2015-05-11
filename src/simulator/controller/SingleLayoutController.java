@@ -94,6 +94,8 @@ public class SingleLayoutController {
 	private Label label_taktzyklen;
 	@FXML
 	private Label label_laufzeit;
+	@FXML
+	private Label label_watchdog;
 	
 	@SuppressWarnings("rawtypes")
 	@FXML
@@ -313,6 +315,23 @@ public class SingleLayoutController {
 				.getLocation().getPath().replaceAll("%20", " ")
 				+ "/Doku.pdf");
 
+		try {
+			Desktop desktop = Desktop.getDesktop();
+			desktop.open(file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//PIC Datasheet oeffnen
+	//Datasheet muss im bin Ordner des Programms liegen
+	@FXML
+	public void onClickDatasheet(){
+		// Dateipfad des Programms erhalten, %20 durch Leerzeichen ersetzen und
+		// \Doku.pdf anfuegen
+		File file = new File(getClass().getProtectionDomain().getCodeSource()
+				.getLocation().getPath().replaceAll("%20", " ")
+				+ "/Datasheet.pdf");
 		try {
 			Desktop desktop = Desktop.getDesktop();
 			desktop.open(file);
@@ -692,6 +711,8 @@ public class SingleLayoutController {
 		label_taktzyklen.setText("0x" + Integer.toHexString(taktzyklen).toUpperCase());
 		//Label Laufzeit aktualisieren
 		label_laufzeit.setText(Laufzeit.laufzeit_string);
+		//Label Watchdog aktualisiseren
+		label_watchdog.setText(Watchdog.watchdog_string);
 	}
 	
 	//OnClick fuer Pins von PortA
