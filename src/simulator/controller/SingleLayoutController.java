@@ -11,6 +11,7 @@ import java.util.List;
 
 
 
+
 import simulator.BefehlDecoder;
 import simulator.Interrupt;
 import simulator.Laufzeit;
@@ -48,21 +49,25 @@ public class SingleLayoutController {
 
 	private ObservableList<ValueClass> data = FXCollections.observableArrayList();
 	private ObservableList<ValueClassSpeicher> data_speicher = FXCollections.observableArrayList();
-	//public static int programcounter = 0;
-	public static int taktzyklen = 0;
-	private int maximalerPC = 0;
-	public static boolean pause = false;
-	public static boolean schritt = false;
-	private boolean ersterStart = true;
-	public static boolean WDTReset = false;
-	public SeriellerPort comport;
-	public boolean comportSelected = false;
+
+	public static int taktzyklen = 0; //Verbrauchte Taktzyklen
+	private int maximalerPC = 0; //maximal moeglicher PC
+	public static boolean pause = false; //Boolean, ob Programm angehalten
+	public static boolean schritt = false; //Boolean, ob Schritt ausgefuehrt werden soll
+	private boolean ersterStart = true; //Boolean, ob es sich um den ersten Start handelt
+	public static boolean WDTReset = false; //Boolean ob WDT Reset
+	public SeriellerPort comport; //Serieller Port
+	public boolean comportSelected = false; //Boolean ob ein Comport gewaehlt wurde
+	public boolean watchdogEnable = false; //Boolean ob WDT ein- oder ausgeschaltet ist
 	
 	private Thread t = null;
 
 	@FXML
 	private MenuItem openFile;
-
+	
+	@FXML
+	private MenuItem menu_watchdog;
+	
 	// Tabelle fuer Code
 	@FXML
 	private TableView<ValueClass> table;
@@ -271,7 +276,15 @@ public class SingleLayoutController {
 			//choiceBox fuer Quarzfrequenz fuellen
 			erzeugeFrequenzChoice();
 			
-	setComPorts();
+			setComPorts();
+			
+			//Watchdogtimer Anzeige an- oder ausschalten
+			if(watchdogEnable){
+				label_watchdog.setDisable(false);
+			}
+			else{
+				label_watchdog.setDisable(true);
+			}
 			
 			ersterStart = false;
 		}
@@ -323,6 +336,7 @@ public class SingleLayoutController {
 		}
 	}
 	
+	
 	//PIC Datasheet oeffnen
 	//Datasheet muss im bin Ordner des Programms liegen
 	@FXML
@@ -339,6 +353,22 @@ public class SingleLayoutController {
 			e.printStackTrace();
 		}
 	}
+	
+	
+	@FXML
+	public void onClickWDT(){
+		if(menu_watchdog.getText().equals("WDT einschalten")){
+			watchdogEnable = true;
+			menu_watchdog.setText("WDT ausschalten");
+			label_watchdog.setDisable(false);
+		}
+		else{
+			watchdogEnable = false;
+			menu_watchdog.setText("WDT einschalten");
+			label_watchdog.setDisable(true);
+		}
+	}
+	
 
 	public short getLine() {
 		String pclString; //String fuer den PCL
@@ -466,6 +496,8 @@ public class SingleLayoutController {
 		BefehlDecoder decoder = new BefehlDecoder();
 		pause = false;
 		
+		//WDT nicht ein- oder ausschaltbar, wenn das Programm laeuft
+		menu_watchdog.setDisable(true);
 		
 		
 		//Quarzfrequenz lesen
@@ -590,7 +622,9 @@ public class SingleLayoutController {
 						Timer0.berechneTimer0();
 						
 						//Watchdogtimer berechnen
-						Watchdog.berechneWatchdog();
+						if(watchdogEnable){
+							Watchdog.berechneWatchdog();
+						}
 						
 						//Watchdog Reset						
 						if(WDTReset){
@@ -645,6 +679,9 @@ public class SingleLayoutController {
 			if(choice_hardware.getValue() != null){
 				comport.close();
 			}
+			
+			//WDT wieder ein- oder ausschaltbar, wenn das Programm angehalten wurde
+			menu_watchdog.setDisable(false);
 		}
 		else {
 			Alert alert = new Alert(AlertType.ERROR);

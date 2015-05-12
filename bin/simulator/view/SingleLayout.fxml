@@ -22,6 +22,11 @@
                         <MenuItem mnemonicParsing="false" onAction="#onClickDatasheet" text="PIC Datasheet" />
                   </items>
                 </Menu>
+                  <Menu mnemonicParsing="false" text="Watchdog">
+                     <items>
+                        <MenuItem fx:id="menu_watchdog" mnemonicParsing="false" onAction="#onClickWDT" text="WDT einschalten" />
+                     </items>
+                  </Menu>
               </menus>
                <contextMenu>
                   <ContextMenu>

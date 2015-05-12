@@ -46,8 +46,6 @@ public class Watchdog {
 		
 		//Watchdog entsprechend der Quarzfrequenz berechnen
 		watchdog += ((Interrupt.taktzyklenNeu - Interrupt.taktzyklenAlt)*4 / Laufzeit.divisor);
-		System.out.println("Quarz: " + Laufzeit.quarzfrequenz);
-		System.out.println("Watchdog: " + watchdog);
 		//Watchdog Timeout loest Interrupt aus und cleared TO Bit des Status Registers
 		if(watchdog >= prescaler_watchdog * 0.018){
 			StatusRegister.setTO(false);
