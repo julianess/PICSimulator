@@ -205,8 +205,7 @@ public class BefehlDecoder
 		short f = maskiereAdresse(befehlcode2); //(short) (befehlcode2 & 127);
 		
 		short zwComp = (short) ((speicherZellen[f] ^ 255)+1); //Zweierkomplement -> Gleiche Methode wie addwf
-		short ergebnisSUBWF = (short) (wRegister + zwComp);
-		
+		short ergebnisSUBWF = (short) (((wRegister + zwComp) ^ 255) +1);
 		
 		//mit Ueberlauf Ueber 255
 		if(wRegister + zwComp > 255)
@@ -233,6 +232,7 @@ public class BefehlDecoder
 			}
 		}
 		else {
+			System.out.println("Im else zweig");
 			//Wenn d == 0, Ergebnis in wRegister, sonst in f
 			if(d == 0)
 			{

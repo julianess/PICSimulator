@@ -125,6 +125,7 @@ public class Timer0 {
 		timer0 = BefehlDecoder.speicherZellen[RegisterAdressen.ADR_TMR0];
 	}
 	
+	//RA4 Port auslesen
 	public static boolean getRA4(){
 		if((BefehlDecoder.speicherZellen[RegisterAdressen.ADR_PORTA] & 16) != 0){
 			return true;
