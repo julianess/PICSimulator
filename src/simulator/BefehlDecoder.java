@@ -204,56 +204,43 @@ public class BefehlDecoder
 		short d = (short) (befehlcode2 & 128);
 		short f = maskiereAdresse(befehlcode2); //(short) (befehlcode2 & 127);
 		
-		//Zweierkomplement = Einserkomplement + 1 
-		short zwComp = (short) ((~speicherZellen[f])+1);
-		short ergebnisSUBWF = (short) (wRegister + zwComp);
 		
-		//mit Ueberlauf Ueber 255
-		if(wRegister + zwComp < 0)
-		{	
-			//Wenn d == 0, Ergebnis in wRegister, sonst in f
-			if(d == 0)
-			{
-				wRegister = (short) (0 - ergebnisSUBWF);
-			}
-			else
-			{
-				speicherZellen[f] = (short) (0 - ergebnisSUBWF);
-				StatusRegister.speicherInStatus();
-			}
-
+		short ergebnisSUBWF = (short)(speicherZellen[f] - wRegister);
+		
+		if(ergebnisSUBWF < 0){
+			ergebnisSUBWF = (short) (256 + ergebnisSUBWF);
 			//Carry Bit setzen
 			StatusRegister.setCarryBit(true);
-			
-			if(wRegister + zwComp == 256) {
-				StatusRegister.setZFlag(true);
-			}
-			else {
-				StatusRegister.setZFlag(false);
-			}
+		}
+		
+		//Carry Bit setzen
+		StatusRegister.setCarryBit(true);
+		
+		//Z-Flag pruefen
+		if(speicherZellen[f] - wRegister == 0) {
+			StatusRegister.setZFlag(true);
 		}
 		else {
-			//Wenn d == 0, Ergebnis in wRegister, sonst in f
-			if(d == 0)
-			{
-				wRegister = (short) (ergebnisSUBWF);
-			}
-			else
-			{
-				speicherZellen[f] = (short) (ergebnisSUBWF);
-				StatusRegister.speicherInStatus();
-			}
-			StatusRegister.setCarryBit(false); //Carry Bit leeren
+			StatusRegister.setZFlag(false);
 		}
 		
 		//Pruefen ob DC Bit gesetzt werden muss
-		if((zwComp & 15 + wRegister & 15) >= 16) {
+		if((speicherZellen[f] & 15 - wRegister & 15) < 0) {
 			StatusRegister.setDigitCarryBit(true);
 		}
 		else {
 			StatusRegister.setCarryBit(false);
 		}
 		
+		//Wenn d == 0, Ergebnis in wRegister, sonst in f
+		if(d == 0){
+			wRegister = ergebnisSUBWF;
+		}
+		else{
+			speicherZellen[f] = ergebnisSUBWF;
+		}
+		
+	
 		Programcounter.pc ++;
 		SingleLayoutController.taktzyklen ++;
 	}
